@@ -13,6 +13,30 @@ const Header = (props:any) => {
     const theme =  useTheme();
     const { colors }: {colors : any} = theme;
 
+    const handleBackPress = () => {
+        try {
+            if (props.backAction) {
+                props.backAction();
+            } else if (navigation.canGoBack && navigation.canGoBack()) {
+                navigation.goBack();
+            } else {
+                // Fallback: Try to navigate to a safe screen
+                // For Settings, try to go back to Profile or DrawerNavigation
+                try {
+                    if (navigation.navigate) {
+                        // Try to navigate to DrawerNavigation first
+                        navigation.navigate('DrawerNavigation' as never);
+                    }
+                } catch (error) {
+                    // If navigation fails, do nothing (button won't work but won't crash)
+                    console.log('Navigation error:', error);
+                }
+            }
+        } catch (error) {
+            console.log('Back button error:', error);
+        }
+    };
+
     return (
         <>
             <View
@@ -31,16 +55,20 @@ const Header = (props:any) => {
                 }]}    
             >
                 {props.leftIcon == "back" &&
-                    <IconButton
+                    <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={handleBackPress}
                         style={[GlobalStyleSheet.headerBtn,{
                             backgroundColor:theme.dark ? colors.input : 'rgba(25,25,25,0.04)',
                             position:'absolute',
                             left:props.transparent ? 10: 5,
-                            zIndex:999999
+                            zIndex:999999,
+                            alignItems:'center',
+                            justifyContent:'center',
                         }]}
-                        onPress={() => props.backAction ? props.backAction() : navigation.goBack()}
-                        icon={() => <MaterialIcons size={20} color={theme.dark ? COLORS.white : COLORS.primary} name="arrow-back"/>} 
-                    />
+                    >
+                        <MaterialIcons size={20} color={theme.dark ? COLORS.white : COLORS.primary} name="arrow-back"/>
+                    </TouchableOpacity>
                 }
                 <View style={{flex:1}}>
                     <Text style={{...FONTS.fontBold,fontSize:25,color:props.explore ? COLORS.primary : colors.title,textAlign:props.titleLeft ? 'left' : 'center'}}>{props.title}</Text>

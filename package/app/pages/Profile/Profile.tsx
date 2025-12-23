@@ -107,7 +107,6 @@ const Profile = () => {
         >
             <Header
                 title="Profile"
-                leftIcon={'back'}
                 rightIcon={'EditProfile'}
             />
             <ScrollView
