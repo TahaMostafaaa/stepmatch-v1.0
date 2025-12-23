@@ -59,3 +59,7 @@ logs
 # OS
 Thumbs.db
 
+# npm cache
+.npm-local-cache/
+package/.npm-local-cache/
+
