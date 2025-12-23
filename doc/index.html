@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, minimal-ui, viewport-fit=cover">
+	<meta name="theme-color" content="#6E4ED4">
+	<meta name="author" content="DexignLabs" /> 
+    <meta name="keywords" content="" /> 
+    <meta name="robots" content="" /> 
+	<meta name="description" content="Ditto - React Native Expo Dating Mobile App Template"/>
+	<meta property="og:title" content="Ditto - React Native Expo Dating Mobile App Template" />
+	<meta property="og:description" content="Ditto - React Native Expo Dating Mobile App Template" />
+	<meta property="og:image" content="https://ditto.dexignlab.com/reactnative-expo/social-image.png"/>
+	<meta name="format-detection" content="telephone=no">
+	
+	<!-- Favicons Icon -->
+	<link rel="shortcut icon" type="image/x-icon" href="images/favicon.png" />
+    
+    <!-- Title -->
+	<title>Ditto - React Native Expo Dating Mobile App Template</title>
+	
+	
+	<!-- Css Style -->
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="plugins/jstree/dist/themes/default/style.min.css">
+	<link rel="stylesheet" href="css/scrollbar.css">
+	<link rel="stylesheet" href="css/font-awesome.css">
+	<link rel="stylesheet" href="css/styles.css">
+	
+	<!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+	
+</head>
+<body data-spy="scroll" data-target=".nav-bar" data-offset="50">
+<div class="wrapper" id="tableofcontent">
+
+	<!-- Sidebar Holder -->
+	<nav id="nevbarleft">
+		<div class="side-nav full-height">
+			<div class="sidebar-header">
+				<div class="main-logo">
+					<img class="icon" src="images/logo-white.png" alt="logo"/>
+				</div>
+			</div>
+			<div class="nav-bar">
+				<ul class="list-unstyled content-scroll components navbar-nav nav" id="download-button">
+					<li class="active"><a href="#introduction">Introduction</a></li>
+					<li><a href="#installation">Installation</a></li>
+					<li><a href="#folder_directories">Folder Directories</a></li>
+					<li><a href="#source_structure">Source Structure</a></li>
+					<li><a href="#theme">Theme</a></li>
+					<li><a href="#appname_icon">App Name & Icon</a></li>
+					<li><a href="#package_name">Package Name</a></li>
+					<li><a href="#custom_work">Custom Work Requirements </a></li>
+					<li><a href="#version_history">Version History</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	
+	<!-- Page Content Holder -->
+	<div id="content">
+		
+		<!-- Navber -->
+		<nav class="navbar navbar-default top-nav-bar ">
+			<div class="container-fluid">
+				<div class="navbar-header">
+				   <button type="button" id="sidebarCollapse" class="navbar-btn">
+						<span></span>
+						<span></span>
+						<span></span>
+					</button>
+				</div>
+				<a href="https://codecanyon.net/user/dexignlabs/portfolio" target="_blank" class="site-button support-button">Buy Now</a>		
+			</div>
+		</nav>
+		
+		<!-- Banner -->
+		<section class="app-brief slide-banner">
+			<div class="container">
+				<div class="section-header">
+					<h2>Ditto - React Native Expo Dating Mobile App Template</h2>
+					<div class="colored-line"></div>
+					<div class="section-description">
+						Ditto - React Native Expo Dating Mobile App Template
+					</div>
+					<div class="colored-line"></div>
+				</div>
+			</div>
+		</section>
+		
+		<!-- Introduction -->
+		<section class="app-brief" id="introduction">
+			<div class="container center-align">
+				<h1>Ditto</h1>
+				<h3>Ditto - React Native Expo Dating Mobile App Template</h3>
+				<p>This documentation is last updated on 11 November 2025.</p>
+				<p>Thank you for purchasing this Mobile App template.</p>
+				<p><strong>If you like this template, Please support us by rating this template with 5 stars </strong> </p>
+			</div>
+		</section>
+		<hr/>
+		
+		<!-- Installation -->
+		<section class="app-brief" id="installation">
+			<div class="container left-align">
+				<div class="section-header">
+					<h2 class="dark-text title">Installation - </h2>
+				</div>
+				<div class="sass-compile">
+					<h3 class="title"><strong>Android</strong><h3>
+					<h3 class="title">1.- Install Node.js</h3>
+					<p>To run React Native app via the command line first, we need to install <a href="https://nodejs.org/en/" target="_blank" class="text-primary">node.js</a>. The easiest way is downloading it from the official website nodejs.org open the package and follow the wizard.</p>
+					
+					<h3 class="title">2. Install node modules</h3>
+					<p>To install React Native packages run following command.</p>
+<pre class="brush: javascript; h-100">
+cd ./source
+npm install
+</pre>
+					<h3 class="title">3. Start a development server</h3>
+					<p>To run React Native app run following command.</p>
+<pre class="brush: javascript; h-100">npx expo start -c
+</pre>
+					<h3 class="title">4. Press "a" | open Android</h3>
+</pre>
+					<p>Using your <a target="_blank" href="https://docs.expo.dev/workflow/android-studio-emulator" class="text-primary">Simulator</a> and build project</p>
+					
+					<img src="images/screenshot/android-studio.png" alt=""/>
+					
+					<br/>
+					<br/>
+					<p>After then please do following steps below</p>
+					<ul class="list-style-1">
+						<li>Step 1: ADM Manager – Install your virtual devices for use</li>
+						<li>Step 2: Sync project with Gradle files</li>
+						<li>Step 3: <code>Clean project</code> after Sync project</li>
+						<li>Step 4: Select virtual device and Run your application</li>
+					</ul>
+					<br/>
+					<br/>
+					
+					<h3 class="title"><strong>IOS</strong><h3>
+					<h3 class="title">1.- Install Node.js</h3>
+					<p>To run React Native app via the command line first, we need to install <a href="https://nodejs.org/en/" target="_blank" class="text-primary">node.js</a>. The easiest way is downloading it from the official website nodejs.org open the package and follow the wizard.</p>
+					
+					<h3 class="title">2. Install node modules</h3>
+					<p>To install React Native packages run following command.</p>
+<pre class="brush: javascript; h-100">
+cd ./source
+npm install
+</pre>
+					<h3 class="title">3. Start a development server</h3>
+					<p>To run React Native app run following command.</p>
+<pre class="brush: javascript; h-100">npx expo start
+</pre>
+					<h3 class="title">4. Press "i" | open IOS simulator</h3>
+</pre>
+					<p>Using your <a target="_blank" href="https://docs.expo.dev/workflow/ios-simulator/" class="text-primary">Simulator</a> and build project</p>
+					
+					<img src="images/screenshot/xcode-install.png" alt=""/>
+					
+				</div>
+			</div>
+		</section>
+		<hr/>
+		
+		<!-- Folder Directories -->
+		<section class="app-brief" id="folder_directories">
+			<div class="container left-align">
+				<div class="section-header ">
+					<h2 class="dark-text title">Folder Directories - </h2>
+				</div>
+				<div id="dz_tree" class="tree-demo">
+					<ul>
+						<li data-jstree='{ "opened" : true }'>Package
+							<ul>
+								<li data-jstree='{ "opened" : false }'>.expo</li>
+                                <!-- <li data-jstree='{ "opened" : false }'>__tests__</li> -->
+								<li data-jstree='{ "opened" : false }'>android</li>
+								<li data-jstree='{ "opened" : true }'>app
+									<ul>
+                                        <li data-jstree='{ "opened" : "false" }'>assets</li>
+                                        <li data-jstree='{ "opened" : "false" }'>components</li>
+                                        <li data-jstree='{ "opened" : "false" }'>constants</li>
+                                        <li data-jstree='{ "opened" : "false" }'>layout</li>
+                                        <li data-jstree='{ "opened" : "false" }'>Navigations</li>
+                                        <li data-jstree='{ "opened" : "false" }'>pages</li>
+                                        <li data-jstree='{ "opened" : "false" }'>Screens</li>
+                                    </ul>   
+								</li>
+								<li data-jstree='{ "opened" : false }'>assets</li>
+                                <li data-jstree='{ "type" : "file" }'>.gitignore</li>
+                                <li data-jstree='{ "type" : "file" }'>app.json</li>
+                                <li data-jstree='{ "type" : "file" }'>App.tsx</li>
+                                <li data-jstree='{ "type" : "file" }'>babel.config.js</li>
+                                <li data-jstree='{ "type" : "file" }'>eas.json</li>
+                                <li data-jstree='{ "type" : "file" }'>package.json</li>
+                                <li data-jstree='{ "type" : "file" }'>package-lock.json</li>
+                                <li data-jstree='{ "type" : "file" }'>tsconfig.json</li>
+                                <li data-jstree='{ "type" : "file" }'>webpack.config.js</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+		<hr/>
+		
+        
+		<section class="app-brief" id="source_structure">
+			<div class="container left-align">
+				<div class="section-header">
+					<h2 class="dark-text title">Source Structure - </h2>
+				</div>
+				<div>
+					<h3>Constants Files</h3>
+					<p>File locate: <code>./app/constants/..</code></p>
+					<ul class="list-style-1">
+						<li>Theme color for app</li>
+						<li>images use for the app</li>
+						<li>Icons & Fonts use for the app</li>
+					</ul>
+					<br/>
+					<h3>Components</h3>
+					<p>File locate: <code>./app/components/..</code></p>
+					<p>Common components that could be used many times in your app:</p>
+					<ul class="list-style-1">
+						<li>CustomButton.js</li>
+						<li>MsgComponent.js</li>
+						<li>ThemeBtn.js</li>
+						<li>CustomSelectBox.js</li>
+						<li>CustomToggle.js etc.</li>
+					</ul>
+					<br/>
+					<h3>Navigation</h3>
+					<p>File locate: <code>./app/Navigations/..</code></p>
+					<img src="images/screenshot/navigation.png" alt=""/>
+					<br/>
+					<br/>
+					<ul class="list-style-1">
+						<li>Define first loading screen here.</li>
+						<li>You can add bottom Navigation Screen in <code>./Navigations/BottomNavigation.js</code>.</li>
+					</ul>
+
+					<br/>
+					<h3>Screens</h3>
+					<p>File locate: <code>./app/screens/..</code></p>
+					<p>Then navigation has defined in <code>./app/Navigations/StackNavigator.js</code> will link with screens locate in folder <code>./app/screens/..</code></p>
+					<p>App all screens design are locate in here  <code>(./app/screens/..).</code> You could change or re-structure by matching with your own project structure design.</p>
+					<br/>
+					<h3>Assets</h3>
+					<p>File locate: <code>./app/assets/..</code></p>
+					<p>You can store images or other file resource in this folder</p>
+					<br/>
+					<h3>Layout</h3>
+					<p>File locate: <code>./app/layout/..</code></p>
+					<p>You can edit Sidebar and Header from here.</p>
+					<br/>
+
+				</div>
+			</div>
+		</section>
+		<hr/>
+		
+		<section class="app-brief" id="theme">
+			<div class="container left-align">
+				<div class="section-header">
+					<h2 class="dark-text title">Theme - </h2>
+				</div>
+				<div>
+					<h3>Font Family</h3>
+					<p>The default font family name <code>“DMSerifDisplay”</code> And <code>“PlusJakartaSans”</code> are being used for this template. If you need change or a custom font to be the prettiest? You’ll need the .ttf files for all supported styles (thin, ultraLight, light, regular, medium, semibold, bold, heavy, black …). Here are the few steps you need to add it.</p>
+					<p>Add more font family in folder <code>./app/assets/fonts/..</code></p>
+					<img src="images/screenshot/fonts.png" alt=""/>
+					<br/>
+					<p>After added new font, open your terminal and run</p>
+<pre class="brush: javascript; h-100">npx react-native-asset
+</pre>
+					<br/>
+					<h3>Color</h3>
+					<p>The template are using color palette following format below.</p>
+					<ul class="color-list">
+						<li>
+							<div class="overlay-text color-primary">Primary</div>
+						</li>
+						<li>
+							<div class="overlay-text color-primarylight text-black">Primay Light</div>
+						</li>
+						<li>
+							<div class="overlay-text color-secondary text-black">Secondary</div>
+						</li>
+						<li>
+							<div class="overlay-text color-success">Success</div>
+						</li>
+						<li>
+							<div class="overlay-text color-danger">Danger</div>
+						</li>
+						<li>
+							<div class="overlay-text color-warning">Warning</div>
+						</li>
+						<li>
+							<div class="overlay-text color-info">Info</div>
+						</li>
+						<li>
+							<div class="overlay-text color-text">Text</div>
+						</li>
+						<li>
+							<div class="overlay-text color-title">Title</div>
+						</li>
+						<li>
+							<div class="overlay-text color-dark">Dark</div>
+						</li>
+					</ul>
+					<p>You can change the theme prop dynamically and all the components will automatically update to reflect the new theme. Open file <code>./app/constants/theme.js</code></p>
+					<img src="images/screenshot/colors.png" alt=""/>
+				</div>
+			</div>
+		</section>
+		
+		<hr/>
+	
+	
+		
+		<section class="app-brief" id="appname_icon">
+			<div class="container left-align">
+				<div class="section-header">
+					<h2 class="dark-text title">App Name & Icon - </h2>
+				</div>
+				<div>
+					<h3>Change the app name</h3>
+					<p>Open file <code>./package/app.json</code> and replace CryptoZone with your app name
+					</p>
+					<img src="images/screenshot/appname.png" alt=""/>
+					<br/>
+					<br/>
+					<h3>Change App Icon</h3>
+					<p>open folder <code>./package/assets</code></p>
+					<p>when you download of 1024px x 1024px (width x height)  you got files then replace them with the below.</p>
+					<img src="images/screenshot/applogo.png" alt=""/>
+				</div>
+			</div>
+		</section>
+		<hr/>
+		
+		<!-- Need Help -->
+		<section class="app-brief" id="custom_work" style="background-image: url(images/bg1.png); background-position: left center;">
+			<div class="container left-align">
+				<div class="col-md-12 text-center custom-info">
+					<h2 class="m-t0">Do You Need Help To Customization</h2>
+					<h3 class="text-primary">After Purchase A Template...</h3>
+					<h4>You Will Start Customizing According Your Requirement<br/> <span class="text-primary">BUT</span> What If You Don't Know</h4>
+					<h3 class="text-black">SOLUTION IS <span class="text-primary"><u>HIRE Dexignlabs</u></span></h3>
+					<div class="hire">
+						<h4><span class="text-black">Hire Same Team For </span> <span class="text-primary">Quality Customization</span></h4>
+						<ul>
+							<li>We Will Customize Template According To Your Requirement</li>
+							<li>We Will Upload On Server And Make Sure Your Website is Live</li>
+						</ul>
+						<div class="gmail-box">
+							<!-- <a href="skype:rahulxarma?chat" class="gmail"><i class="fa fa-skype"></i>rahulxarma</a> -->
+							<a target="_blank" href="mailto:Indiankoder@gmail.com" class="gmail"><i class="fa fa-envelope"></i> Indiankoder@gmail.com</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		
+		<!-- Change Log -->
+		<section class="app-brief change-log" id="version_history">
+			<div class="container left-align">
+				<div class="section-header">
+					<h2 class="dark-text title">Version History - <small class="topbutton"><a class="scroltop" href="javascript:void(0);">#back to top</a></small></h2>
+				</div>
+				<h3>(1.0) 11 November 2025</h3>
+				<ul>
+					<li>New - Created & Upload Ditto</li>
+				</ul>
+			</div>
+		</section>
+			
+		<!-- Footer -->
+		<footer class="app-brief grey-bg">
+			<div class="container">
+				<p class="copyright">
+					© <span class="current-year">2025</span> <a href="javascript:void(0);"><strong>Dexignlabs</strong></a>. All Rights Reserved
+				</p>
+			</div>
+		</footer>
+	
+	</div>
+</div>
+	
+<!-- JavaScript -->
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="plugins/jstree/dist/jstree.min.js"></script>
+<script src="js/jquery.scrollTo.min.js"></script>
+<script src="js/highlight-min.js"></script>
+<script src="js/jquery.localScroll.min.js"></script>
+<script src="js/scrollbar.min.js"></script>
+<script src="js/custom.js"></script>
+
+<script>
+	document.addEventListener('DOMContentLoaded', (event) => {
+		document.querySelectorAll('pre.dark-code code').forEach((el) => {
+			hljs.highlightElement(el);
+		});
+	});		
+</script>
+</body>
+</html>

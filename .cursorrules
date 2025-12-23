@@ -1,0 +1,74 @@
+# Ditto - React Native Expo Dating App Template
+
+## Quick Reference
+
+**Main Source:** ./package/app/
+**Theme Config:** ./package/app/constants/theme.tsx
+**Navigation:** ./package/app/Navigations/Routes.tsx
+**App Entry:** ./package/App.tsx
+**Expo Config:** ./package/app.json
+
+## Project Structure
+- Components: ./package/app/components/
+- Pages: ./package/app/pages/
+- Constants: ./package/app/constants/
+- Navigation: ./package/app/Navigations/
+- Assets: ./package/app/assets/
+
+## Key Customization Points
+
+### Colors & Theme
+- **Location:** ./package/app/constants/theme.tsx
+- Modify `COLORS` object for color changes
+- Theme supports dynamic switching via `themeContext`
+
+### Fonts
+- **Add Fonts:** 
+  1. Add .ttf files to ./package/app/assets/fonts/
+  2. Run: `npx react-native-asset`
+  3. Update `App.tsx` (useFonts hook) and `theme.tsx` (FONTS object)
+- **Current Fonts:** Nunito family, OleoScript-Bold
+
+### App Name & Icon
+- **App Name:** Edit ./package/app.json → "name" field
+- **Icons:** Replace files in ./package/assets/ (icon.png, adaptive-icon.png, splash-icon.png)
+
+### Adding Screens
+- Create component in ./package/app/pages/[ScreenName]/
+- Register in ./package/app/Navigations/StackNavigator.tsx
+- Add route to appropriate navigation type
+
+### Package Name (Android)
+- Edit ./package/app.json → "package" field
+
+## Tech Stack
+- React Native 0.81.5
+- Expo ~54.0.23
+- TypeScript ~5.9.2
+- React Navigation 7.x
+- React Native Paper 5.14.5
+
+## Development Commands
+- Start: `cd ./package && npx expo start -c`
+- Android: Press "a" after starting
+- iOS: Press "i" after starting
+- Fonts: `npx react-native-asset` (after adding fonts)
+
+## Important Notes
+- Always run `npx react-native-asset` after adding fonts
+- Theme changes are dynamic via themeContext
+- Navigation structure in StackNavigator.tsx
+- All screens must be registered in navigation files
+- App config centralized in app.json
+
+## Common Components Location
+- Buttons: ./package/app/components/Button/
+- Inputs: ./package/app/components/Input/
+- Action Sheets: ./package/app/components/ActionSheet/
+- Modals: ./package/app/components/Modal/
+- Charts: ./package/app/components/Charts/
+
+For detailed documentation, see PROJECT_CONTEXT.md
+
+
+

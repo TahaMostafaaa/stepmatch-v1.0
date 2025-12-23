@@ -1,0 +1,74 @@
+
+import { NavigatorScreenParams } from "@react-navigation/native";
+import { BottomTabParamList } from "./BottomTabParamList";
+
+export type RootStackParamList = {
+    DrawerNavigation: NavigatorScreenParams<BottomTabParamList>;
+
+    BottomNavigation: undefined;
+    OnBoarding: undefined;
+    SignUp: undefined;
+    Login: undefined;
+    NearbyYou: undefined;
+    NearbyYou2: undefined;
+    NearbyYou3: undefined;
+    Notifications: undefined;
+    Video: undefined;
+    AMatch: undefined;
+    VideoCall: undefined;
+    EditProfile: undefined;
+    PrivacyPolicy: undefined;
+    TermsandConditions: undefined;
+    ContactUs: undefined;
+    SafetyPolicy: undefined;
+    AccountSecurity: undefined;
+    HelpCenter: undefined;
+    Faq: undefined;
+    Language: undefined;
+    Subscription: undefined;
+    FirstName: undefined;
+    EnterBirthDate: undefined;
+    YourGender: undefined;
+    Intrested: undefined;
+    RecentPics: undefined;
+    Orientation: undefined;
+    LookingFor: undefined;
+    SingleChat: undefined;
+    Settings: undefined;
+    Splash: undefined;
+	
+	Pages: undefined;
+    Components: undefined;
+    Accordion: undefined;
+    ActionSheet: undefined;
+    ActionModals: undefined;
+    BottomSheet: undefined;
+    ModalBox: undefined;
+    Buttons: undefined;
+    Badges: undefined;
+    Charts: undefined;
+    Headers: undefined;
+    lists: undefined;
+    Pricings: undefined;
+    DividerElements: undefined;
+    Snackbars: undefined;
+    Socials: undefined;
+    Swipeable: undefined;
+    Tabs: undefined;
+    Tables: undefined;
+    Toggles: undefined;
+    Inputs: undefined;
+    Footers: undefined;
+    TabStyle1: undefined;
+    TabStyle2: undefined;
+    TabStyle3: undefined;
+    TabStyle4: undefined;
+    Datepicker: undefined;
+    Search2: undefined;
+    Chips: undefined;
+    CollapseElements: undefined;
+    FileUploads: undefined;
+    Paginations: undefined;
+    Reels: undefined;
+
+};
