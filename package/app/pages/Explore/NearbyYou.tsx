@@ -2,12 +2,13 @@ import React from "react";
 import { View, StyleSheet, ImageBackground, Platform, StatusBar, Text, TouchableOpacity, TextInput, Image, ScrollView } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import { GlobalStyleSheet } from "../../constants/StyleSheet";
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useNavigation } from "@react-navigation/native";
 import { COLORS, FONTS, IMAGES } from "../../constants/theme";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import DistanceSlider from "../../components/DistanceSlider";
 import AnimatedUserMarker from "../../components/AnimatedUserMarker";
+import Header from "../../layout/Header";
 
 const MapeUser = [
     {
@@ -34,6 +35,7 @@ const NearbyYou = () => {
 
     const theme = useTheme();
     const { colors }: {colors : any} = theme
+    const navigation = useNavigation<any>();
 
     const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 60 : StatusBar.currentHeight;
 
@@ -125,15 +127,10 @@ const NearbyYou = () => {
                                 source={IMAGES.likedPic8}
                             />
                         </View>
-                        <View style={[GlobalStyleSheet.flexCenter,{paddingHorizontal:20,}]}>
-                            <Text style={[FONTS.fontBold,{fontSize:25,color:theme.dark ? colors.title : '#191919'}]}>Nearby You</Text>
-                            <TouchableOpacity
-                                activeOpacity={0.8}
-                                style={[GlobalStyleSheet.headerBtn,]}
-                            >
-                                <Feather name="more-horizontal" color={colors.text} size={24}/>
-                            </TouchableOpacity>
-                        </View>
+                        <Header
+                            title="Nearby You"
+                            leftIcon={'back'}
+                        />
                         <View style={{paddingHorizontal:20,}}>
                             <TextInput
                                 style={{

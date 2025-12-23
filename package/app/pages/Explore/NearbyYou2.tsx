@@ -1,11 +1,12 @@
 import React from "react";
 import { View, StyleSheet, ImageBackground, Platform, StatusBar, Text, TouchableOpacity, TextInput, Image, Dimensions } from "react-native";
 import { GlobalStyleSheet } from "../../constants/StyleSheet";
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useNavigation } from "@react-navigation/native";
 import { COLORS, FONTS, IMAGES } from "../../constants/theme";
 import { Feather } from '@expo/vector-icons';
 import AnimatedUserMarker2 from "../../components/AnimatedUserMarker2";
 import DistanceSlider2 from "../../components/DistanceSlider2";
+import Header from "../../layout/Header";
 
 
 const { width } = Dimensions.get("window");
@@ -14,6 +15,7 @@ const NearbyYou2 = () => {
 
     const theme = useTheme();
     const { colors }: {colors : any} = theme
+    const navigation = useNavigation<any>();
 
     const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 60 : StatusBar.currentHeight;
 
@@ -32,15 +34,10 @@ const NearbyYou2 = () => {
                     paddingTop:STATUSBAR_HEIGHT,
                 }]}
             >
-                <View style={[GlobalStyleSheet.flexCenter,{paddingHorizontal:20,}]}>
-                    <Text style={[FONTS.fontBold,{fontSize:25,color:theme.dark ? colors.title : '#191919'}]}>Nearby You</Text>
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        style={[GlobalStyleSheet.headerBtn,]}
-                    >
-                        <Feather name="more-horizontal" color={colors.text} size={24}/>
-                    </TouchableOpacity>
-                </View>
+                <Header
+                    title="Nearby You"
+                    leftIcon={'back'}
+                />
                 <View style={{paddingHorizontal:20,}}>
                     <TextInput
                         style={{
