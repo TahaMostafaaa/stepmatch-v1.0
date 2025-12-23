@@ -102,9 +102,16 @@ const DiscoverScreen = ({ openProfileSheet } : any) => {
             Animated.timing(nextOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
         ]).start(() => {
             position.setValue({ x: 0, y: 0 });
-            nextScale.setValue(0.9);
-            nextOpacity.setValue(0.6);
-            setIndex((prev) => (prev + 1 < profiles.length ? prev + 1 : 0));
+            // Update index first, then reset animated values for the next card
+            setIndex((prev) => {
+                const newIndex = prev + 1 < profiles.length ? prev + 1 : 0;
+                // Reset animated values after state update to ensure new current card isn't affected
+                setTimeout(() => {
+                    nextScale.setValue(0.9);
+                    nextOpacity.setValue(0.6);
+                }, 0);
+                return newIndex;
+            });
         });
     };
 
@@ -131,6 +138,7 @@ const DiscoverScreen = ({ openProfileSheet } : any) => {
                     { translateY: position.y },
                     { rotate },
                 ],
+                opacity: 1,
                 }
             : {
                 transform: [{ scale: nextScale }],
