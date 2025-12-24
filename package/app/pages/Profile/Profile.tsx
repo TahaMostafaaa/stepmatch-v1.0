@@ -189,9 +189,9 @@ const Profile = () => {
                                         active={theme.dark}
                                         onToggle={(value : any) => {
                                             if(value){
-                                                setLightTheme();
-                                            }else{
                                                 setDarkTheme();
+                                            }else{
+                                                setLightTheme();
                                             }
                                         }}
                                     />

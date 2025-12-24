@@ -14,13 +14,14 @@ const Routes = () => {
     const [isDarkTheme, setIsDarkTheme] = useState(false);
     
     const authContext = React.useMemo(() => ({
+        isDarkTheme,
         setDarkTheme: () => {
             setIsDarkTheme(true);
         },
         setLightTheme: () => {
             setIsDarkTheme(false);
         }
-    }), []);
+    }), [isDarkTheme]);
 
     const CustomDefaultTheme = {
         ...NavigationDefaultTheme,

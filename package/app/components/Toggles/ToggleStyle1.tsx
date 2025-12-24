@@ -12,13 +12,11 @@ const ToggleStyle1 = (props: any) => {
 
     // handle initial state from props
     useEffect(() => {
-      if (props.active) {
-        setActive(true);
-        Animated.spring(offset, {
-          toValue: 17,
-          useNativeDriver: true,
-        }).start();
-      }
+      setActive(props.active || false);
+      Animated.spring(offset, {
+        toValue: props.active ? 17 : 0,
+        useNativeDriver: true,
+      }).start();
     }, [props.active]);
 
     // handle toggle

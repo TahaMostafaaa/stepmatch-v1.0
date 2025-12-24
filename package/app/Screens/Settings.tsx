@@ -20,9 +20,7 @@ const Settings = () => {
 
     const RBSheetLanguage = useRef<any>(null);
 
-    const {setDarkTheme,setLightTheme} = React.useContext<any>(themeContext);
-
-    const [isDark , setIsDark] = useState<any>();
+    const {isDarkTheme, setDarkTheme, setLightTheme} = React.useContext<any>(themeContext);
 
     const onShare = async () => {
         try {
@@ -68,8 +66,7 @@ const Settings = () => {
     ]
 
     const handleTheme = () => {
-        setIsDark(!isDark);
-        if(isDark){
+        if(isDarkTheme){
             setLightTheme();
         }else{
             setDarkTheme();
@@ -229,8 +226,8 @@ const Settings = () => {
                             }]}>
                                 <ListStyle2
                                     onPress={() => handleTheme()}
-                                    icon={<Ionicons color={"#ff4db8"} size={18} name={isDark ? 'sunny' : 'moon'} />}
-                                    title={isDark ? "Light mode" : "Dark mode"}
+                                    icon={<Ionicons color={"#ff4db8"} size={18} name={isDarkTheme ? 'sunny' : 'moon'} />}
+                                    title={isDarkTheme ? "Light mode" : "Dark mode"}
                                     desc="Just for you"
                                 />
                                 <ListStyle2
