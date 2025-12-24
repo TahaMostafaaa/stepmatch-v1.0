@@ -154,7 +154,7 @@ const Subscription = () => {
                             maxWidth:300,
                         }}
                     >
-                        <Text style={[FONTS.fontBold,{fontSize:18,color:theme.dark ? colors.title : '#191919'}]}>Do You Love Ditto ?</Text>
+                        <Text style={[FONTS.fontBold,{fontSize:18,color:theme.dark ? colors.title : '#191919'}]}>Do You Love StepMatch ?</Text>
                         <Text style={[FONTS.fontBold,{fontSize:14,color:theme.dark ? colors.title : '#191919'}]}>Please Rate Us With 5 stars </Text>
                         <View style={{flexDirection:'row',marginTop:15,marginBottom:40}}>
                             {new Array(rating).fill(rating).map((_,index) => {

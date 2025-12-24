@@ -34,7 +34,7 @@ const SignUp = ({ navigation } : SignUpScreenProps) => {
             >
                 <View style={[GlobalStyleSheet.container,{flex:1,paddingHorizontal:27}]}>
                     <View style={{alignItems:'center',marginTop:60,flex:1}}>
-                        <Text style={[FONTS.fontBold,{fontSize:25,color:COLORS.primary}]}>Ditto</Text>
+                        <Text style={[FONTS.fontBold,{fontSize:25,color:COLORS.primary}]}>StepMatch</Text>
                     </View>
                     <View style={{flex:1,alignItems:'center'}}>
                         <Text style={[FONTS.fontBold,{fontSize:30,color:colors.title,textAlign:'center'}]}>Create Account</Text>

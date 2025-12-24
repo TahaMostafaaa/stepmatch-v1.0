@@ -21,7 +21,7 @@ const FaqAccordion = () => {
 
     const DATA = [
         {
-            title: 'What Ditto picture should I use?',
+            title: 'What StepMatch picture should I use?',
             content: "Upload photos to GoMeet$^{\circledR}$ that feature who everyone came to see: you! Ditch your friends because this isn't about them and remove the sunglasses because they hide your face. The best pics are in focus and some say a smile goes a long way here",
         },
         {
@@ -29,11 +29,11 @@ const FaqAccordion = () => {
             content: 'Keep it short and authentic! Mention a few hobbies or interests that show your personality. A good bio helps people start a real conversation, so keep it light, friendly, and fun.',
         },
         {
-            title: 'Are Ditto profiles real?',
-            content: 'Yes! Ditto uses advanced verification systems to ensure profiles are genuine. However, always stay cautious and report any suspicious behavior to help keep the community safe.',
+            title: 'Are StepMatch profiles real?',
+            content: 'Yes! StepMatch uses advanced verification systems to ensure profiles are genuine. However, always stay cautious and report any suspicious behavior to help keep the community safe.',
         },
         {
-            title: 'How do Ditto matches work?',
+            title: 'How do StepMatch matches work?',
             content: "When two people like each other's profiles, it's a match! Once matched, you can start chatting and getting to know each other directly within the app.",
         },
         {
@@ -42,19 +42,19 @@ const FaqAccordion = () => {
         },
         {
             title: "Can I undo a 'Like' or 'Pass'?",
-            content: 'Yes, Ditto Plus users can use the Rewind feature to undo their last action. If you accidentally passed on someone, you can go back and like them again.',
+            content: 'Yes, StepMatch Plus users can use the Rewind feature to undo their last action. If you accidentally passed on someone, you can go back and like them again.',
         },
         {
-            title: "Can Ditto be used on a laptop?",
-            content: 'Currently, Ditto is designed for mobile use on iOS and Android devices. A web version may be available in the future!',
+            title: "Can StepMatch be used on a laptop?",
+            content: 'Currently, StepMatch is designed for mobile use on iOS and Android devices. A web version may be available in the future!',
         },
         {
             title: "How do I cancel my subscription?",
             content: 'You can cancel anytime from your app store’s subscription settings. Your subscription will remain active until the end of the current billing cycle.',
         },
         {
-            title: "How does Ditto use my location?",
-            content: 'Ditto uses your location to show you potential matches nearby and improve your experience. You can control location permissions anytime in your device settings.',
+            title: "How does StepMatch use my location?",
+            content: 'StepMatch uses your location to show you potential matches nearby and improve your experience. You can control location permissions anytime in your device settings.',
         },
     ];
 

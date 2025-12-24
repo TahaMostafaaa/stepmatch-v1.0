@@ -61,7 +61,7 @@ const OnBoarding = ({ navigation } : OnBoardingScreenProps) => {
                     />
                     <View style={{flex:1}}>
                         <View style={{alignItems:'center',marginTop:80}}>
-                            <Text style={[FONTS.fontBold,{fontSize:25,color:COLORS.primary}]}>Ditto</Text>
+                            <Text style={[FONTS.fontBold,{fontSize:25,color:COLORS.primary}]}>StepMatch</Text>
                         </View>
                         <View style={[GlobalStyleSheet.container,{flex:1,justifyContent:'flex-end',paddingBottom:70,paddingHorizontal:32,paddingRight:70}]}>
                             <View style={{marginBottom:30}}>

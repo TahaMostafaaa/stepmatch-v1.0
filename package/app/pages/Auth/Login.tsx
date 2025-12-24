@@ -36,7 +36,7 @@ const Login = ({ navigation } : LoginScreenProps) => {
             >
                 <View style={[GlobalStyleSheet.container,{flex:1,paddingHorizontal:27,paddingTop:STATUSBAR_HEIGHT}]}>
                     <View style={{alignItems:'center',flex:1}}>
-                        <Text style={[FONTS.fontBold,{fontSize:25,color:COLORS.primary}]}>Ditto</Text>
+                        <Text style={[FONTS.fontBold,{fontSize:25,color:COLORS.primary}]}>StepMatch</Text>
                     </View>
                     <View style={{flex:1,alignItems:'center'}}>
                         <Text style={[FONTS.fontBold,{fontSize:30,color:colors.title,textAlign:'center'}]}>Welcome Back!</Text>

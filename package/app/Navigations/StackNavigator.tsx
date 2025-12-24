@@ -36,7 +36,7 @@ import OnBoarding from '../pages/Splash/OnBoarding';
 import SingleChat from '../pages/Chats/SingleChat';
 import EditProfile from '../pages/Profile/EditProfile';
 import Settings from '../pages/Settings';
-import AMatch from '../pages/it’saMatch/AMatch';
+import AMatch from '../pages/itsaMatch/AMatch';
 import SignUp from '../pages/Auth/SignUp';
 import Login from '../pages/Auth/Login';
 import NearbyYou from '../pages/Explore/NearbyYou';

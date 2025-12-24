@@ -1,7 +1,7 @@
-# Ditto - React Native Expo Dating App Template
+# StepMatch - React Native Expo Dating App Template
 
 ## Project Overview
-- **Name:** Ditto - React Native Expo Dating Mobile App Template
+- **Name:** StepMatch - React Native Expo Dating Mobile App Template
 - **Version:** 1.0.0
 - **Framework:** React Native with Expo
 - **Language:** TypeScript
@@ -41,8 +41,8 @@ package/
 
 ### Configuration
 - **Expo Config:** `./package/app.json`
-  - App name: `"name": "Ditto"`
-  - Android package: `"package": "com.deepeshgour.ditto"`
+  - App name: `"name": "StepMatch"`
+  - Android package: `"package": "com.deepeshgour.stepmatch"`
   - Icons location: `./package/assets/`
 
 ## Customization Guidelines
@@ -66,7 +66,7 @@ package/
 
 ### 3. Changing App Name & Icon
 **App Name:**
-- Edit `./package/app.json` → change `"name": "Ditto"`
+- Edit `./package/app.json` → change `"name": "StepMatch"`
 
 **App Icon:**
 - Replace files in `./package/assets/`:
@@ -82,7 +82,7 @@ package/
 
 ### 5. Package Name (Android)
 **Location:** `./package/app.json`
-- Change `"package": "com.deepeshgour.ditto"` to your package name
+- Change `"package": "com.deepeshgour.stepmatch"` to your package name
 
 ## Installation & Setup
 

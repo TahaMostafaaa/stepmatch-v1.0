@@ -22,7 +22,7 @@ const Explore = () => {
               }]}
           > 
             <Header
-              title={"Ditto"}
+              title={"StepMatch"}
               leftIcon={'back'}
               rightIcon={'Notifaction'}
               explore

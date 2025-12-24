@@ -44,7 +44,7 @@ const LookingFor = ({ navigation } : LookingForScreenProps) => {
                         showsVerticalScrollIndicator={false}
                     >
                         <Header
-                            title={'Ditto'}
+                            title={'StepMatch'}
                             explore
                             leftIcon={'back'}
                             onPress={() => navigation.goBack()}
