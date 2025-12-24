@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Image, Linking, Platform, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -22,7 +22,11 @@ const Settings = () => {
 
     const {setDarkTheme,setLightTheme} = React.useContext<any>(themeContext);
 
-    const [isDark , setIsDark] = useState<any>();
+    const [isDark , setIsDark] = useState<boolean>(theme.dark || false);
+
+    useEffect(() => {
+        setIsDark(theme.dark || false);
+    }, [theme.dark]);
 
     const onShare = async () => {
         try {
@@ -68,11 +72,12 @@ const Settings = () => {
     ]
 
     const handleTheme = () => {
-        setIsDark(!isDark);
-        if(isDark){
-            setLightTheme();
-        }else{
+        const newIsDark = !isDark;
+        setIsDark(newIsDark);
+        if(newIsDark){
             setDarkTheme();
+        }else{
+            setLightTheme();
         }
     }
     
