@@ -80,6 +80,46 @@ export interface ApiError {
   message?: string;
 }
 
+import { ProfileImage } from '../api/matching.types';
+
+// Location object with coordinates and optional address
+export interface LocationData {
+  lat: number; // Latitude
+  lng: number; // Longitude
+  address?: string | null; // Human-readable address (optional)
+}
+
+// Profile data returned from /auth/profile endpoint
+export interface Profile {
+  id: string;
+  name: string;
+  email: string;
+  birthdate?: string; // Format: YYYY-MM-DD
+  age?: number; // Calculated age if provided by API
+  profile_image?: string | null; // URL to profile image
+  profile_completion_percentage?: number; // 0.0 to 1.0 (0% to 100%)
+  bio?: string | null;
+  location?: LocationData | null; // Location object with lat/lng
+  interests?: string[] | null;
+  phone?: string | null; // Phone number
+  images?: ProfileImage[]; // Array of uploaded profile photos
+  // Extended fields
+  [key: string]: any; // Allow for additional fields from API
+}
+
+// Update profile request payload
+export interface UpdateProfileRequest {
+  name?: string;
+  email?: string;
+  phone?: string;
+  bio?: string | null;
+  location?: LocationData | null; // Location object with lat/lng
+  birthdate?: string; // Format: YYYY-MM-DD
+  profile_image?: string | null; // URL to profile image after upload
+  // Extended fields
+  [key: string]: any; // Allow for additional fields
+}
+
 // Storage keys for secure storage
 export const STORAGE_KEYS = {
   ACCESS_TOKEN: 'auth_access_token',

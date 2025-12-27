@@ -12,6 +12,8 @@ import {
   AuthResponse,
   LoginRequest,
   SignupRequest,
+  Profile,
+  UpdateProfileRequest,
 } from '../auth/auth.types';
 import { getRefreshToken } from '../storage/secureStorage';
 
@@ -85,6 +87,27 @@ export const authApi = {
       // Local cleanup will still happen in auth context
       console.error('Logout API call failed');
     }
+  },
+
+  /**
+   * Get user profile information
+   * @returns Profile data with user details
+   * @throws 401 for unauthorized, 404 if profile not found
+   */
+  getProfile: async (): Promise<Profile> => {
+    const response = await apiClient.get<Profile>('/auth/profile');
+    return response.data;
+  },
+
+  /**
+   * Update user profile information
+   * @param data - UpdateProfileRequest with fields to update
+   * @returns Updated Profile data
+   * @throws 401 for unauthorized, 400 for validation errors
+   */
+  updateProfile: async (data: UpdateProfileRequest): Promise<Profile> => {
+    const response = await apiClient.put<Profile>('/auth/profile', data);
+    return response.data;
   },
 };
 

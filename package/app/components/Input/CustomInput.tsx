@@ -76,8 +76,10 @@ const CustomInput = (props :any) => {
                     placeholderTextColor={colors.text}
                     placeholder={props.placeholder}
                     onChangeText={props.onChangeText}
-                    value={props.value && props.value}
-                    defaultValue={props.defaultValue && props.defaultValue}
+                    value={props.value !== undefined ? props.value : undefined}
+                    defaultValue={props.defaultValue !== undefined ? props.defaultValue : undefined}
+                    multiline={props.multiline}
+                    numberOfLines={props.numberOfLines}
                     onFocus={(e) => {
                         setIsFocused(true);
                         props.onFocus && props.onFocus(e);

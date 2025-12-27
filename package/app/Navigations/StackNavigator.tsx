@@ -72,6 +72,11 @@ const MyStatusBar = ({ ...props }) => (
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackNavigator = () => {
+    // #region agent log
+    React.useEffect(() => {
+      fetch('http://127.0.0.1:7242/ingest/9eba5a3f-effc-404b-8ca6-35a671e4da8f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'StackNavigator.tsx:74',message:'StackNavigator rendering',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+    }, []);
+    // #endregion
     
     const theme = useTheme();
 

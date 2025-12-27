@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, FONTS, IMAGES } from '../../constants/theme';
@@ -7,6 +7,7 @@ import { GlobalStyleSheet } from '../../constants/StyleSheet';
 import Header from '../../layout/Header';
 import ProfileDetailsSheet from '../ProfileDetailsSheet';
 import { BlurView } from 'expo-blur';
+import matchingContext from '../../context/matchingContext';
 
 const Likes = () => {
 
@@ -14,73 +15,39 @@ const Likes = () => {
 
     const { colors }: {colors : any} = useTheme();
 
-    const LikedData = [
-        {
-            id:"0",
-            image : IMAGES.likedPic5,
-            name : "Chelsea",
-            age : 25,
-        },
-        {
-            id:"1",
-            image : IMAGES.likedPic6,
-            name : "Abby",
-            age : 27,
-        },
-        {
-            id:"2",
-            image : IMAGES.likedPic7,
-            name : "Javelle",
-            age : 23,
-        },
-        {
-            id:"3",
-            image : IMAGES.likedPic8,
-            name : "Veronica",
-            age : 25,
-        },
-        {
-            id:"4",
-            image : IMAGES.likedPic9,
-            name : "Richard",
-            age : 22,
-        },
-        {
-            id:"5",
-            image : IMAGES.likedPic10,
-            name : "chelsea",
-            age : 25,
-        },
-        {
-            id:"6",
-            image : IMAGES.likedPic12,
-            name : "Chelsea",
-            age : 25,
-        },
-        {
-            id:"7",
-            image : IMAGES.likedPic1,
-            name : "Abby",
-            age : 27,
-        },
-        {
-            id:"8",
-            image : IMAGES.likedPic2,
-            name : "Javelle",
-            age : 23,
-        },
-        {
-            id:"9",
-            image : IMAGES.likedPic4,
-            name : "Veronica",
-            age : 25,
-        },
-    ]
+    // Get matching context
+    const {
+        matches,
+        matchesLoading,
+        matchesError,
+        loadMatches,
+        unmatch,
+    } = React.useContext(matchingContext);
 
-    const [liked, setLiked] = useState(null);
+    // Load matches on mount
+    useEffect(() => {
+        loadMatches();
+    }, []);
 
-    const handleLike = (id : any) => {
-        setLiked(liked === id ? null : id); // toggle like
+    const handleUnmatch = (matchId: string, matchName: string) => {
+        Alert.alert(
+            'Unmatch',
+            `Are you sure you want to unmatch with ${matchName}?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Unmatch',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await unmatch(matchId);
+                        } catch (error: any) {
+                            Alert.alert('Error', error.message || 'Failed to unmatch. Please try again.');
+                        }
+                    },
+                },
+            ]
+        );
     };
 
     const ProfileDetailsSheetRef = useRef<any>(null);
@@ -127,121 +94,165 @@ const Likes = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{paddingBottom:80}}
                 >
-                    <View
-                        style={GlobalStyleSheet.container}
-                    >
-                        <View style={GlobalStyleSheet.row}>
-                            {LikedData.map((data,index) => {
-
-                                const isLiked = liked === data.id;
-
-                                return(
-                                    <View
-                                        style={[GlobalStyleSheet.col50,{marginBottom:10}]}
-                                        key={index}
-                                    >
-                                        <TouchableOpacity
-                                            activeOpacity={0.8}
-                                            style={{
-                                                width:'100%',
-                                                height:205,
-                                                borderRadius:15,
-                                                overflow:'hidden'
-                                            }}
-                                            onPress={openProfileSheet}
-                                            // onPress={() => navigation.navigate('ProfileDetails',{item : data})}
+                    {matchesLoading && matches.length === 0 ? (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 100 }}>
+                            <ActivityIndicator size="large" color={COLORS.primary} />
+                            <Text style={[FONTS.fontMedium, { marginTop: 10, color: colors.text }]}>
+                                Loading matches...
+                            </Text>
+                        </View>
+                    ) : matchesError && matches.length === 0 ? (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 100, paddingHorizontal: 20 }}>
+                            <Text style={[FONTS.fontBold, { fontSize: 18, color: colors.title, marginBottom: 10 }]}>
+                                Error Loading Matches
+                            </Text>
+                            <Text style={[FONTS.fontRegular, { fontSize: 14, color: colors.text, textAlign: 'center', marginBottom: 20 }]}>
+                                {matchesError}
+                            </Text>
+                            <TouchableOpacity
+                                onPress={() => loadMatches()}
+                                style={{
+                                    backgroundColor: COLORS.primary,
+                                    paddingHorizontal: 20,
+                                    paddingVertical: 10,
+                                    borderRadius: 8,
+                                }}
+                            >
+                                <Text style={[FONTS.fontBold, { color: COLORS.white }]}>Retry</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : matches.length === 0 ? (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 100, paddingHorizontal: 20 }}>
+                            <Text style={[FONTS.fontBold, { fontSize: 18, color: colors.title, marginBottom: 10 }]}>
+                                No Matches Yet
+                            </Text>
+                            <Text style={[FONTS.fontRegular, { fontSize: 14, color: colors.text, textAlign: 'center' }]}>
+                                Start swiping to find your dance partner!
+                            </Text>
+                        </View>
+                    ) : (
+                        <View
+                            style={GlobalStyleSheet.container}
+                        >
+                            <View style={GlobalStyleSheet.row}>
+                                {matches.map((match) => {
+                                    return(
+                                        <View
+                                            style={[GlobalStyleSheet.col50,{marginBottom:10}]}
+                                            key={match.id}
                                         >
-                                            <Image
-                                                style={{
-                                                    width:'100%',
-                                                    height:'100%',
-                                                    borderRadius:15,
-                                                }}
-                                                source={data.image}
-                                            />
                                             <TouchableOpacity
-                                                onPress={() => navigation.navigate('SingleChat',{data : data})}
                                                 activeOpacity={0.8}
                                                 style={{
-                                                    height:33,
-                                                    width:33,
-                                                    borderRadius:30,
-                                                    alignItems:'center',
-                                                    justifyContent:'center',
-                                                    backgroundColor:'rgba(25,25,25,0.10)',
-                                                    position:'absolute',
-                                                    right:10,
-                                                    top:10
+                                                    width:'100%',
+                                                    height:205,
+                                                    borderRadius:15,
+                                                    overflow:'hidden'
                                                 }}
+                                                onPress={openProfileSheet}
+                                                onLongPress={() => handleUnmatch(match.id, match.matched_user_name || 'this match')}
                                             >
-                                                <Image
+                                                {match.matched_user_image ? (
+                                                    <Image
+                                                        style={{
+                                                            width:'100%',
+                                                            height:'100%',
+                                                            borderRadius:15,
+                                                        }}
+                                                        source={{ uri: match.matched_user_image }}
+                                                    />
+                                                ) : (
+                                                    <View style={{
+                                                        width:'100%',
+                                                        height:'100%',
+                                                        borderRadius:15,
+                                                        backgroundColor: COLORS.primary,
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                    }}>
+                                                        <Text style={[FONTS.fontBold, { color: COLORS.white, fontSize: 20 }]}>
+                                                            {match.matched_user_name?.charAt(0).toUpperCase() || '?'}
+                                                        </Text>
+                                                    </View>
+                                                )}
+                                                <TouchableOpacity
+                                                    onPress={() => navigation.navigate('SingleChat', {
+                                                        data: {
+                                                            name: match.matched_user_name || 'Match',
+                                                            image: match.matched_user_image || IMAGES.likedPic5,
+                                                            id: match.matched_user_id,
+                                                        }
+                                                    })}
+                                                    activeOpacity={0.8}
                                                     style={{
-                                                        height:16,
-                                                        width:16
+                                                        height:33,
+                                                        width:33,
+                                                        borderRadius:30,
+                                                        alignItems:'center',
+                                                        justifyContent:'center',
+                                                        backgroundColor:'rgba(25,25,25,0.10)',
+                                                        position:'absolute',
+                                                        right:10,
+                                                        top:10
                                                     }}
-                                                    source={IMAGES.chat2}
-                                                />
-                                            </TouchableOpacity>
-                                            <View
-                                                style={{
-                                                    height: 42,
-                                                    position: 'absolute',
-                                                    left: 0,
-                                                    right: 0,
-                                                    bottom: 0,
-                                                    overflow: 'hidden',
-                                                }}
-                                            >
-                                                <BlurView
-                                                    intensity={40} // Similar to blurAmount={4}
-                                                    tint="light" // Similar to blurType="light"
-                                                    style={{
-                                                    height: 42,
-                                                    backgroundColor: 'rgba(25,25,25,0.30)',
-                                                    }}
-                                                />
-
+                                                >
+                                                    <Image
+                                                        style={{
+                                                            height:16,
+                                                            width:16
+                                                        }}
+                                                        source={IMAGES.chat2}
+                                                    />
+                                                </TouchableOpacity>
                                                 <View
-                                                    style={[
-                                                    GlobalStyleSheet.flexCenter,
-                                                    {
+                                                    style={{
                                                         height: 42,
-                                                        paddingHorizontal: 12,
                                                         position: 'absolute',
                                                         left: 0,
                                                         right: 0,
                                                         bottom: 0,
-                                                    },
-                                                    ]}
+                                                        overflow: 'hidden',
+                                                    }}
                                                 >
-                                                    <Text
-                                                    style={[
-                                                        FONTS.fontBold,
-                                                        { fontSize: 16, color: COLORS.white, flex: 1 },
-                                                    ]}
-                                                    >
-                                                    {data.name}, {data.age}
-                                                    </Text>
-
-                                                    {/* Like Button */}
-                                                    <TouchableOpacity onPress={() => handleLike(data.id)} activeOpacity={0.8}>
-                                                    <Image
+                                                    <BlurView
+                                                        intensity={40}
+                                                        tint="light"
                                                         style={{
-                                                        height: 20,
-                                                        width: 20,
+                                                            height: 42,
+                                                            backgroundColor: 'rgba(25,25,25,0.30)',
                                                         }}
-                                                        resizeMode="contain"
-                                                        source={isLiked ? IMAGES.heart2 : IMAGES.heart6}
                                                     />
-                                                    </TouchableOpacity>
+
+                                                    <View
+                                                        style={[
+                                                            GlobalStyleSheet.flexCenter,
+                                                            {
+                                                                height: 42,
+                                                                paddingHorizontal: 12,
+                                                                position: 'absolute',
+                                                                left: 0,
+                                                                right: 0,
+                                                                bottom: 0,
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <Text
+                                                            style={[
+                                                                FONTS.fontBold,
+                                                                { fontSize: 16, color: COLORS.white, flex: 1 },
+                                                            ]}
+                                                        >
+                                                            {match.matched_user_name || 'Match'}
+                                                        </Text>
+                                                    </View>
                                                 </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                    </View>
-                                )
-                            })}
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                })}
+                            </View>
                         </View>
-                    </View>
+                    )}
                 </ScrollView>
             </View>
             <ProfileDetailsSheet

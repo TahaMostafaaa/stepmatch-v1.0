@@ -142,7 +142,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Check if we have stored tokens
         const tokens = await getTokens();
         
-        if (!tokens.access_token) {
+        if (!tokens || !tokens.access_token) {
           // No tokens stored - user needs to login
           dispatch({ type: 'AUTH_LOGOUT' });
           return;
@@ -156,19 +156,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           try {
             const response = await authApi.refreshToken(tokens.refresh_token);
             
-            if (response.access_token && response.user) {
+            if (response && response.access_token && response.user) {
               await storeTokens({
                 access_token: response.access_token,
-                refresh_token: response.refresh_token,
+                refresh_token: response.refresh_token || tokens.refresh_token,
                 expires_at: response.expires_at,
               });
               await storeUser(response.user);
               dispatch({ type: 'AUTH_RESTORE', payload: response.user });
               return;
+            } else {
+              // Invalid response - clear and require login
+              console.warn('Invalid refresh token response:', response);
+              await clearAuthData();
+              dispatch({ type: 'AUTH_LOGOUT' });
+              return;
             }
-          } catch (refreshError) {
+          } catch (refreshError: any) {
             // Refresh failed - clear tokens and require login
-            await clearAuthData();
+            console.error('Token refresh failed:', refreshError?.message || refreshError);
+            try {
+              await clearAuthData();
+            } catch (clearError) {
+              console.error('Error clearing auth data after refresh failure:', clearError);
+            }
             dispatch({ type: 'AUTH_LOGOUT' });
             return;
           }
@@ -176,15 +187,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Token still valid - restore user from storage
         const user = await getUser();
-        if (user) {
+        if (user && user.id) {
           dispatch({ type: 'AUTH_RESTORE', payload: user });
         } else {
           // Token exists but no user - something wrong, clear everything
+          console.warn('Token exists but user data is missing or invalid');
           await clearAuthData();
           dispatch({ type: 'AUTH_LOGOUT' });
         }
-      } catch (error) {
-        console.error('Auth bootstrap error');
+      } catch (error: any) {
+        console.error('Auth bootstrap error:', error);
+        console.error('Auth bootstrap error details:', {
+          message: error?.message,
+          stack: error?.stack,
+          name: error?.name,
+        });
+        // Clear any potentially corrupted data and require login
+        try {
+          await clearAuthData();
+        } catch (clearError) {
+          console.error('Error clearing auth data during bootstrap:', clearError);
+        }
         dispatch({ type: 'AUTH_LOGOUT' });
       }
     };
