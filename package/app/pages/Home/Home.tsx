@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation, useTheme } from '@react-navigation/native';
-import { Image, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, Text, TextInput, TouchableOpacity, View, AppState } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { GlobalStyleSheet } from '../../constants/StyleSheet';
 import { COLORS, FONTS, IMAGES } from '../../constants/theme';
@@ -12,6 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Camera from 'expo-camera';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
+import matchingContext from '../../context/matchingContext';
 
 const Home = () => {
 
@@ -19,6 +20,13 @@ const Home = () => {
 
     const theme = useTheme();
     const { colors }: {colors : any} = theme;
+
+    // Get matching context
+    const { updateLocationFromGPS } = React.useContext(matchingContext);
+
+    // Location update interval (5 minutes)
+    const LOCATION_UPDATE_INTERVAL = 5 * 60 * 1000;
+    const locationUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const filterSheetRef = useRef<any>(null);
 
@@ -62,10 +70,58 @@ const Home = () => {
     const handleLocationPermission = async () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status === 'granted') {
-        await AsyncStorage.setItem('location_permission', 'granted');
+            await AsyncStorage.setItem('location_permission', 'granted');
+            // Update location after permission granted
+            try {
+                await updateLocationFromGPS();
+            } catch (error) {
+                console.error('Error updating location after permission:', error);
+                // Don't show error to user - location will update on next interval
+            }
         }
         setStep(3);
     };
+
+    // Update location function
+    const updateLocation = async () => {
+        try {
+            await updateLocationFromGPS();
+        } catch (error) {
+            console.error('Error updating location:', error);
+            // Silently fail - location updates are not critical for app functionality
+        }
+    };
+
+    // Set up periodic location updates
+    useEffect(() => {
+        // Update location on mount if permission is granted
+        const checkAndUpdateLocation = async () => {
+            const locationPermission = await AsyncStorage.getItem('location_permission');
+            if (locationPermission === 'granted') {
+                await updateLocation();
+            }
+        };
+        checkAndUpdateLocation();
+
+        // Set up periodic updates
+        locationUpdateIntervalRef.current = setInterval(() => {
+            updateLocation();
+        }, LOCATION_UPDATE_INTERVAL);
+
+        // Update location when app comes to foreground
+        const subscription = AppState.addEventListener('change', (nextAppState) => {
+            if (nextAppState === 'active') {
+                updateLocation();
+            }
+        });
+
+        return () => {
+            if (locationUpdateIntervalRef.current) {
+                clearInterval(locationUpdateIntervalRef.current);
+            }
+            subscription.remove();
+        };
+    }, []);
 
     // 🔔 Notification Permission
     const handleNotificationPermission = async () => {

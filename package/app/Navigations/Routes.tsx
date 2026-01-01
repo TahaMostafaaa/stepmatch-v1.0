@@ -1,15 +1,22 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { 
   NavigationContainer, 
   DefaultTheme as NavigationDefaultTheme,
   DarkTheme as NavigationDarkTheme
 } from '@react-navigation/native';
-import StackNavigator from "./StackNavigator";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import themeContext from '../constants/themeContext';
+import { MatchingProvider } from '../context/matchingContext';
+import { AuthProvider } from '../auth/auth.context';
+import AuthGuard from './AuthGuard';
 import { COLORS } from "../constants/theme";
 
 const Routes = () => {
+	// #region agent log
+	useEffect(() => {
+		fetch('http://127.0.0.1:7242/ingest/9eba5a3f-effc-404b-8ca6-35a671e4da8f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Routes.tsx:14',message:'Routes component rendering',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+	}, []);
+	// #endregion
 
     const [isDarkTheme, setIsDarkTheme] = useState(false);
     
@@ -61,13 +68,22 @@ const Routes = () => {
 
     const theme = isDarkTheme ? CustomDarkTheme : CustomDefaultTheme;
 
+	// #region agent log
+	useEffect(() => {
+		fetch('http://127.0.0.1:7242/ingest/9eba5a3f-effc-404b-8ca6-35a671e4da8f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Routes.tsx:66',message:'Routes about to render providers',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+	}, []);
+	// #endregion
 
     return (
         <SafeAreaProvider>
             <themeContext.Provider value={authContext}>
-                <NavigationContainer theme={theme}>
-					<StackNavigator />
-                </NavigationContainer>
+                <AuthProvider>
+                    <MatchingProvider>
+                        <NavigationContainer theme={theme}>
+                            <AuthGuard />
+                        </NavigationContainer>
+                    </MatchingProvider>
+                </AuthProvider>
             </themeContext.Provider>
         </SafeAreaProvider>
     );

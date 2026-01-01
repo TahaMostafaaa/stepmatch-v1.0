@@ -1,48 +1,94 @@
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native'
-import React from 'react'
-import { useTheme } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../Navigations/RootStackParamList';
+import { View, Text, ScrollView, TouchableOpacity, Image, Modal, Animated, Platform } from 'react-native'
+import React, { useEffect, useRef } from 'react'
+import { useTheme, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, FONTS, IMAGES } from '../../constants/theme';
 import { GlobalStyleSheet } from '../../constants/StyleSheet';
-import Header from '../../layout/Header';
+import { MatchInfo } from '../../api/matching.types';
 
-type AMatchScreenProps = NativeStackScreenProps<RootStackParamList, 'AMatch'>;
+interface AMatchProps {
+    matchData: MatchInfo | null;
+    onClose: () => void;
+}
 
-const AMatch = ({ navigation } : AMatchScreenProps) => {
+const AMatch = ({ matchData, onClose }: AMatchProps) => {
 
     const theme = useTheme()
     const { colors }: {colors : any} = theme;
+    const navigation = useNavigation<any>();
+
+    // Animation for celebration
+    const scaleAnim = useRef(new Animated.Value(0)).current;
+    const opacityAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        // Celebration animation on mount
+        Animated.parallel([
+            Animated.spring(scaleAnim, {
+                toValue: 1,
+                friction: 3,
+                tension: 40,
+                useNativeDriver: true,
+            }),
+            Animated.timing(opacityAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+        ]).start();
+
+        // Auto-dismiss after 5 seconds (optional)
+        // const timer = setTimeout(() => {
+        //     onClose();
+        // }, 5000);
+        // return () => clearTimeout(timer);
+    }, []);
+
+    // Early return if matchData is not available
+    if (!matchData) {
+        return null;
+    }
+
+    const handleSendMessage = () => {
+        onClose();
+        navigation.navigate('SingleChat', {
+            data: {
+                name: matchData.matched_user_name || 'Match',
+                image: matchData.matched_user_image || IMAGES.likedPic14,
+                id: matchData.matched_user_id,
+            }
+        });
+    };
 
     return (
-        <SafeAreaView
-            style={[GlobalStyleSheet.container,{
-                padding:0,
-                flex:1,
-                backgroundColor:colors.card,
-            }]}
+        <Modal
+            visible={true}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={onClose}
         >
-            <View
-                style={{
-                    paddingHorizontal:0
-                }}
+            <SafeAreaView
+                style={[GlobalStyleSheet.container, {
+                    padding: 0,
+                    flex: 1,
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                }]}
             >
-                <Header
-                    title={'StepMatch'}
-                    leftIcon={'back'}
-                    explore
-                    transparent
-                />
-            </View>
-            <ScrollView contentContainerStyle={{flexGrow:1}}>
-                <View style={{
-                    flex:1,
-                    alignItems:'center',
-                    justifyContent:'center',
-                    paddingTop:50,
-                    paddingBottom:20,
-                }}>
+                <Animated.View
+                    style={{
+                        flex: 1,
+                        opacity: opacityAnim,
+                        transform: [{ scale: scaleAnim }],
+                    }}
+                >
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                        <View style={{
+                            flex:1,
+                            alignItems:'center',
+                            justifyContent:'center',
+                            paddingTop:50,
+                            paddingBottom:20,
+                        }}>
                     <View style={{position:'absolute',top:-127.01,left:-130.01}}>
                         <View style={{position:'relative',alignItems:'center',justifyContent:'center'}}>
                             <Image
@@ -97,16 +143,29 @@ const AMatch = ({ navigation } : AMatchScreenProps) => {
                                         borderRadius: 25,
                                         alignItems: 'center',
                                         justifyContent: 'center',
+                                        backgroundColor: colors.card,
                                     }}
                                 >
-                                    <Image  
-                                        style={{
-                                            height:'100%',
-                                            width: '100%',
-                                            borderRadius:25
-                                        }}
-                                        source={IMAGES.likedPic12}
-                                    />
+                                    {matchData.matched_user_image ? (
+                                        <Image  
+                                            style={{
+                                                height:'100%',
+                                                width: '100%',
+                                                borderRadius:25
+                                            }}
+                                            resizeMode="cover"
+                                            source={{ uri: matchData.matched_user_image }}
+                                        />
+                                    ) : (
+                                        <Image  
+                                            style={{
+                                                height:'100%',
+                                                width: '100%',
+                                                borderRadius:25
+                                            }}
+                                            source={IMAGES.likedPic12}
+                                        />
+                                    )}
                                 </View>
                             </View>
                         </View>
@@ -125,8 +184,10 @@ const AMatch = ({ navigation } : AMatchScreenProps) => {
                                     borderRadius: 25,
                                     alignItems: 'center',
                                     justifyContent: 'center',
+                                    backgroundColor: colors.card,
                                 }}
                             >
+                                {/* Current user image - you might want to get this from profile context */}
                                 <Image  
                                     style={{
                                         height:'100%',
@@ -188,56 +249,69 @@ const AMatch = ({ navigation } : AMatchScreenProps) => {
                                 source={IMAGES.heart7}
                             />
                         </View>
-                    </View>
-                </View>
-                <View style={{marginBottom:35,alignItems:'center'}}>
-                    <Text style={[FONTS.OleoScriptBold,{fontSize:45,color:COLORS.primary,lineHeight:63,marginBottom:12}]}>Your Matched!</Text>
-                    <Text style={[FONTS.fontNunitoRegular,{fontSize:16,color:colors.text,paddingHorizontal:75,textAlign:'center'}]}>"Say hello to Marianne and start your conversation now!"</Text>
-                </View>
-                <View
-                    style={{alignItems:'center',marginBottom:50}}
-                >
-                    <TouchableOpacity
-                        onPress={() => 
-                            navigation.navigate('SingleChat', {
-                                data: {
-                                    name: 'Isabella Marie ',
-                                    image: IMAGES.likedPic14
-                                }
-                            })
-                        }
-                        activeOpacity={0.8}
-                        style={[GlobalStyleSheet.headerBtn,{
-                            height:90,
-                            width:90,
-                            borderRadius:50,
-                            backgroundColor:COLORS.primary,
-                            zIndex:99
-                        }]}
-                    >
-                        <Image
-                            style={{
-                                width:43,
-                                height:35,
-                            }}
-                            resizeMode='contain'
-                            source={IMAGES.chat}
-                        />
-                    </TouchableOpacity>
-                </View>
-                <View style={{position:'absolute',bottom:-120,right:-120}}>
-                    <Image
-                        style={{
-                            width:'100%',
-                            height:null,
-                            aspectRatio:1/1,
-                        }}
-                        resizeMode='contain'
-                        source={IMAGES.Ellipse}
-                    />
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                        </View>
+                        </View>
+                        <View style={{ marginBottom: 35, alignItems: 'center' }}>
+                            <Text style={[FONTS.OleoScriptBold, { fontSize: 45, color: COLORS.primary, lineHeight: 63, marginBottom: 12 }]}>
+                                It's a Match!
+                            </Text>
+                            <Text style={[FONTS.fontNunitoRegular, { fontSize: 16, color: colors.text, paddingHorizontal: 75, textAlign: 'center' }]}>
+                                {`Say hello to ${matchData.matched_user_name || 'your match'} and start your conversation now!`}
+                            </Text>
+                        </View>
+                        <View
+                            style={{ alignItems: 'center', marginBottom: 50, flexDirection: 'row', justifyContent: 'center', gap: 20 }}
+                        >
+                            <TouchableOpacity
+                                onPress={onClose}
+                                activeOpacity={0.8}
+                                style={[GlobalStyleSheet.headerBtn, {
+                                    height: 50,
+                                    paddingHorizontal: 30,
+                                    borderRadius: 25,
+                                    backgroundColor: 'rgba(255,255,255,0.2)',
+                                }]}
+                            >
+                                <Text style={[FONTS.fontBold, { color: COLORS.white, fontSize: 16 }]}>
+                                    Keep Swiping
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={handleSendMessage}
+                                activeOpacity={0.8}
+                                style={[GlobalStyleSheet.headerBtn, {
+                                    height: 90,
+                                    width: 90,
+                                    borderRadius: 50,
+                                    backgroundColor: COLORS.primary,
+                                    zIndex: 99
+                                }]}
+                            >
+                                <Image
+                                    style={{
+                                        width: 43,
+                                        height: 35,
+                                    }}
+                                    resizeMode='contain'
+                                    source={IMAGES.chat}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{position:'absolute',bottom:-120,right:-120}}>
+                            <Image
+                                style={{
+                                    width:'100%',
+                                    height:null,
+                                    aspectRatio:1/1,
+                                }}
+                                resizeMode='contain'
+                                source={IMAGES.Ellipse}
+                            />
+                        </View>
+                    </ScrollView>
+                </Animated.View>
+            </SafeAreaView>
+        </Modal>
     )
 }
 

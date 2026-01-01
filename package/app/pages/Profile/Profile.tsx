@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { GlobalStyleSheet } from '../../constants/StyleSheet';
@@ -8,6 +8,8 @@ import { Feather } from '@expo/vector-icons';
 import * as Progress from 'react-native-progress';
 import ToggleStyle1 from '../../components/Toggles/ToggleStyle1';
 import themeContext from '../../constants/themeContext';
+import { authApi } from '../../api/auth.api';
+import { Profile as ProfileType } from '../../auth/auth.types';
 
 
 const ProfileData = [
@@ -78,6 +80,20 @@ const ProfileData = [
     },
 ]
 
+/**
+ * Calculate age from birthdate string (YYYY-MM-DD format)
+ */
+const calculateAge = (birthdate: string): number => {
+    const today = new Date();
+    const birth = new Date(birthdate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    return age;
+};
+
 const Profile = () => {
 
     const theme = useTheme();
@@ -87,14 +103,44 @@ const Profile = () => {
 
     const navigation = useNavigation<any>();
 
-    const [progress, setProgress] = useState(0.1); // 0.0 to 1.0 (means 40%)
+    const [profile, setProfile] = useState<ProfileType | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [progress, setProgress] = useState(0.1); // Default progress
 
-     // Example: Animate progress to 80%
+    // Fetch profile data on component mount
     useEffect(() => {
-        const timer = setTimeout(() => {
-        setProgress(0.4); // 80% after delay
-        }, 2000);
-        return () => clearTimeout(timer);
+        const fetchProfile = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const profileData = await authApi.getProfile();
+                setProfile(profileData);
+                
+                // Set progress from API or default to 0.1
+                const completionPercentage = profileData.profile_completion_percentage ?? 0.1;
+                setProgress(completionPercentage);
+            } catch (err: any) {
+                const errorMessage = 
+                    err.response?.data?.detail ||
+                    err.response?.data?.message ||
+                    err.message ||
+                    'Failed to load profile. Please try again.';
+                setError(errorMessage);
+                console.error('Profile fetch error:', err);
+                
+                // Show error alert
+                Alert.alert(
+                    'Error',
+                    errorMessage,
+                    [{ text: 'OK' }]
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
     }, []);
 
     return (
@@ -147,7 +193,12 @@ const Profile = () => {
                                 borderRadius:100,
                                 position:'absolute',
                             }}
-                            source={IMAGES.likedPic8}
+                            source={
+                                profile?.profile_image 
+                                    ? { uri: profile.profile_image }
+                                    : IMAGES.likedPic8
+                            }
+                            defaultSource={IMAGES.likedPic8}
                         />
                         <View
                             style={[styles.profileProgress]}
@@ -156,17 +207,35 @@ const Profile = () => {
                         </View>
                     </View>
                 </View>
-                <View style={[GlobalStyleSheet.flexaling,{justifyContent:'center',gap:10,marginBottom:15}]}>
-                    <Text style={{...FONTS.fontBold,color:colors.title,lineHeight:18,fontSize:18}}>Sofia, 19</Text>
-                    <Image 
-                        style={{
-                            height:22,
-                            width:22
-                        }}
-                        resizeMode='contain'
-                        source={IMAGES.Check}
-                    />
-                </View>
+                {loading ? (
+                    <View style={{alignItems:'center',justifyContent:'center',paddingVertical:20}}>
+                        <ActivityIndicator size="large" color={COLORS.primary} />
+                    </View>
+                ) : error ? (
+                    <View style={{alignItems:'center',justifyContent:'center',paddingVertical:20,paddingHorizontal:20}}>
+                        <Text style={{...FONTS.fontRegular,color:colors.title,textAlign:'center'}}>{error}</Text>
+                    </View>
+                ) : (
+                    <View style={[GlobalStyleSheet.flexaling,{justifyContent:'center',gap:10,marginBottom:15}]}>
+                        <Text style={{...FONTS.fontBold,color:colors.title,lineHeight:18,fontSize:18}}>
+                            {profile?.name || 'User'}
+                            {profile?.age !== undefined 
+                                ? `, ${profile.age}`
+                                : profile?.birthdate 
+                                    ? `, ${calculateAge(profile.birthdate)}`
+                                    : ''
+                            }
+                        </Text>
+                        <Image 
+                            style={{
+                                height:22,
+                                width:22
+                            }}
+                            resizeMode='contain'
+                            source={IMAGES.Check}
+                        />
+                    </View>
+                )}
                 <View style={{flex:1,paddingHorizontal:25}}>
                     {ProfileData.map((data, index) => {
                         if(data.id === '2'){
