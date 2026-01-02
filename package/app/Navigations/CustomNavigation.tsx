@@ -26,15 +26,23 @@ const CustomNavigation = ({ state, navigation, descriptors }: Props) => {
         }).start();
     };
 
-    useFocusEffect(
-        useCallback(() => {
-            const interval = setInterval(() => {
-                navigation.navigate("AMatch"); 
-            }, 0.8 * 60 * 1000); // 30s
+    // Removed automatic navigation interval that was causing white screen issues
+    // The interval was navigating to "AMatch" every 48 seconds, which could fail
+    // when the app is idle or navigation is not available
+    // If automatic navigation is needed, it should be handled differently with proper error handling
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         const interval = setInterval(() => {
+    //             try {
+    //                 navigation.navigate("AMatch"); 
+    //             } catch (error) {
+    //                 console.error('[CustomNavigation] Navigation error:', error);
+    //             }
+    //         }, 0.8 * 60 * 1000); // 48s
 
-            return () => clearInterval(interval);
-        }, [navigation])
-    );
+    //         return () => clearInterval(interval);
+    //     }, [navigation])
+    // );
 
     return (
         <>

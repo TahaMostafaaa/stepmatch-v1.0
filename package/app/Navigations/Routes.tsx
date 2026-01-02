@@ -9,6 +9,7 @@ import themeContext from '../constants/themeContext';
 import { MatchingProvider } from '../context/matchingContext';
 import { AuthProvider } from '../auth/auth.context';
 import AuthGuard from './AuthGuard';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { COLORS } from "../constants/theme";
 
 const Routes = () => {
@@ -75,17 +76,19 @@ const Routes = () => {
 	// #endregion
 
     return (
-        <SafeAreaProvider>
-            <themeContext.Provider value={authContext}>
-                <AuthProvider>
-                    <MatchingProvider>
-                        <NavigationContainer theme={theme}>
-                            <AuthGuard />
-                        </NavigationContainer>
-                    </MatchingProvider>
-                </AuthProvider>
-            </themeContext.Provider>
-        </SafeAreaProvider>
+        <ErrorBoundary>
+            <SafeAreaProvider>
+                <themeContext.Provider value={authContext}>
+                    <AuthProvider>
+                        <MatchingProvider>
+                            <NavigationContainer theme={theme}>
+                                <AuthGuard />
+                            </NavigationContainer>
+                        </MatchingProvider>
+                    </AuthProvider>
+                </themeContext.Provider>
+            </SafeAreaProvider>
+        </ErrorBoundary>
     );
 };
 

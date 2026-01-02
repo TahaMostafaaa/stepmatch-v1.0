@@ -133,44 +133,91 @@ const Home = () => {
         setStep(3);
     };
 
-    // Update location function
+    // Update location function with improved error handling
     const updateLocation = async () => {
         try {
+            // Check if app is in active state before updating location
+            const currentAppState = AppState.currentState;
+            if (currentAppState !== 'active') {
+                console.log('[Home] Skipping location update - app not active:', currentAppState);
+                return;
+            }
+
             await updateLocationFromGPS();
-        } catch (error) {
-            console.error('Error updating location:', error);
+        } catch (error: any) {
+            console.error('[Home] Error updating location:', error);
             // Silently fail - location updates are not critical for app functionality
+            // Prevent error from propagating and causing white screen
         }
     };
 
-    // Set up periodic location updates
+    // Set up periodic location updates with improved error handling
     useEffect(() => {
+        let isMounted = true;
+        let appStateSubscription: any = null;
+
         // Update location on mount if permission is granted
         const checkAndUpdateLocation = async () => {
-            const locationPermission = await AsyncStorage.getItem('location_permission');
-            if (locationPermission === 'granted') {
-                await updateLocation();
+            try {
+                if (!isMounted) return;
+                
+                const locationPermission = await AsyncStorage.getItem('location_permission');
+                if (locationPermission === 'granted') {
+                    await updateLocation();
+                }
+            } catch (error) {
+                console.error('[Home] Error in checkAndUpdateLocation:', error);
             }
         };
         checkAndUpdateLocation();
 
-        // Set up periodic updates
+        // Set up periodic updates with error handling
         locationUpdateIntervalRef.current = setInterval(() => {
-            updateLocation();
+            try {
+                // Check if component is still mounted
+                if (!isMounted) {
+                    return;
+                }
+                
+                // Check app state before updating
+                const currentAppState = AppState.currentState;
+                if (currentAppState === 'active') {
+                    updateLocation().catch((error) => {
+                        console.error('[Home] Error in location update interval:', error);
+                    });
+                }
+            } catch (error) {
+                console.error('[Home] Error in location update interval wrapper:', error);
+                // Prevent interval from crashing the app
+            }
         }, LOCATION_UPDATE_INTERVAL);
 
         // Update location when app comes to foreground
-        const subscription = AppState.addEventListener('change', (nextAppState) => {
-            if (nextAppState === 'active') {
-                updateLocation();
+        appStateSubscription = AppState.addEventListener('change', (nextAppState) => {
+            try {
+                if (!isMounted) return;
+                
+                if (nextAppState === 'active') {
+                    updateLocation().catch((error) => {
+                        console.error('[Home] Error updating location on app state change:', error);
+                    });
+                }
+            } catch (error) {
+                console.error('[Home] Error in AppState listener:', error);
             }
         });
 
         return () => {
+            isMounted = false;
+            
             if (locationUpdateIntervalRef.current) {
                 clearInterval(locationUpdateIntervalRef.current);
+                locationUpdateIntervalRef.current = null;
             }
-            subscription.remove();
+            
+            if (appStateSubscription) {
+                appStateSubscription.remove();
+            }
         };
     }, []);
 

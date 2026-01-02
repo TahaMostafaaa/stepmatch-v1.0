@@ -80,7 +80,19 @@ export const setLogoutCallback = (callback: () => void): void => {
   logoutCallback = callback;
 };
 
-// Response interceptor - Handle errors
+// Helper function to detect network errors
+const isNetworkError = (error: any): boolean => {
+  return (
+    !error.response &&
+    (error.message === 'Network Error' ||
+      error.message === 'timeout of 30000ms exceeded' ||
+      error.code === 'ECONNABORTED' ||
+      error.code === 'ERR_NETWORK' ||
+      error.code === 'ETIMEDOUT')
+  );
+};
+
+// Response interceptor - Handle errors with improved error handling
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     console.log('[APIClient] Response received:', {
@@ -91,19 +103,56 @@ apiClient.interceptors.response.use(
     return response;
   },
   async (error) => {
+    // Detect network errors
+    if (isNetworkError(error)) {
+      console.error('[APIClient] Network error detected:', {
+        message: error.message,
+        code: error.code,
+        url: error.config?.url,
+        method: error.config?.method?.toUpperCase(),
+      });
+      
+      // Don't trigger logout on network errors - user might just be offline
+      // Return a more user-friendly error
+      const networkError = new Error('Network error. Please check your internet connection.');
+      (networkError as any).isNetworkError = true;
+      (networkError as any).originalError = error;
+      return Promise.reject(networkError);
+    }
+
     // Handle 401 Unauthorized - token expired
     if (error.response?.status === 401) {
-      // Call logout callback if set
-      if (logoutCallback) {
+      // Prevent multiple logout calls
+      if (logoutCallback && !error.config?.skipAuthRedirect) {
         console.log('[APIClient] Calling logout callback due to 401');
-        logoutCallback();
+        try {
+          logoutCallback();
+        } catch (logoutError) {
+          console.error('[APIClient] Error in logout callback:', logoutError);
+        }
       }
       console.error('[APIClient] Unauthorized (401) - token may be expired:', {
         url: error.config?.url,
         method: error.config?.method?.toUpperCase(),
         data: error.response?.data,
       });
-    } else {
+    } 
+    // Handle 500+ server errors - don't crash the app
+    else if (error.response?.status >= 500) {
+      console.error('[APIClient] Server error:', {
+        status: error.response.status,
+        url: error.config?.url,
+        method: error.config?.method?.toUpperCase(),
+      });
+      
+      // Return user-friendly error message
+      const serverError = new Error('Server error. Please try again later.');
+      (serverError as any).isServerError = true;
+      (serverError as any).originalError = error;
+      return Promise.reject(serverError);
+    }
+    // Handle other errors
+    else {
       console.error('[APIClient] Response error:', {
         status: error.response?.status,
         url: error.config?.url,
@@ -113,6 +162,7 @@ apiClient.interceptors.response.use(
       });
     }
     
+    // Prevent error from crashing the app - always return a proper error object
     return Promise.reject(error);
   }
 );
