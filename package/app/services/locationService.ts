@@ -17,6 +17,22 @@ export interface LocationPermissionResult {
 }
 
 /**
+ * Location Permission Status
+ * Represents the current state of location permission on the device
+ */
+export type LocationPermissionStatus = 'granted' | 'denied' | 'undetermined' | 'blocked';
+
+/**
+ * Location Permission State
+ * Complete state information for location permission
+ */
+export interface LocationPermissionState {
+  status: LocationPermissionStatus;
+  canRequestAgain: boolean;
+  lastChecked: Date | null;
+}
+
+/**
  * Request location permissions
  * @returns LocationPermissionResult with granted status
  */
@@ -51,6 +67,79 @@ export const checkLocationPermission = async (): Promise<boolean> => {
   } catch (error) {
     console.error('Error checking location permission:', error);
     return false;
+  }
+};
+
+/**
+ * Get location permission state with detailed information
+ * @returns LocationPermissionState with status, canRequestAgain flag, and lastChecked timestamp
+ */
+export const getLocationPermissionState = async (): Promise<LocationPermissionState> => {
+  try {
+    const { status, canAskAgain } = await Location.getForegroundPermissionsAsync();
+    
+    // Map Expo Location status to our LocationPermissionStatus type
+    let permissionStatus: LocationPermissionStatus;
+    let canRequestAgain = true;
+
+    if (status === 'granted') {
+      permissionStatus = 'granted';
+      canRequestAgain = true;
+    } else if (status === 'denied') {
+      // Check if permission can be requested again
+      // On iOS, canAskAgain is always true if status is denied
+      // On Android, canAskAgain is false if user selected "Don't ask again"
+      if (canAskAgain === false) {
+        permissionStatus = 'blocked';
+        canRequestAgain = false;
+      } else {
+        permissionStatus = 'denied';
+        canRequestAgain = true;
+      }
+    } else {
+      permissionStatus = 'undetermined';
+      canRequestAgain = true;
+    }
+
+    return {
+      status: permissionStatus,
+      canRequestAgain,
+      lastChecked: new Date(),
+    };
+  } catch (error) {
+    console.error('Error getting location permission state:', error);
+    return {
+      status: 'undetermined',
+      canRequestAgain: true,
+      lastChecked: new Date(),
+    };
+  }
+};
+
+/**
+ * Validate location coordinates
+ * @param coordinates - Location coordinates to validate
+ * @throws Error if coordinates are null, undefined, NaN, or out of valid range
+ */
+export const validateLocationCoordinates = (coordinates: LocationCoordinates | null | undefined): void => {
+  if (!coordinates) {
+    throw new Error('Invalid location data. Please try again.');
+  }
+
+  if (typeof coordinates.latitude !== 'number' || typeof coordinates.longitude !== 'number') {
+    throw new Error('Invalid location data. Please try again.');
+  }
+
+  if (isNaN(coordinates.latitude) || isNaN(coordinates.longitude)) {
+    throw new Error('Invalid location data. Please try again.');
+  }
+
+  if (coordinates.latitude < -90 || coordinates.latitude > 90) {
+    throw new Error('Invalid location data. Please try again.');
+  }
+
+  if (coordinates.longitude < -180 || coordinates.longitude > 180) {
+    throw new Error('Invalid location data. Please try again.');
   }
 };
 

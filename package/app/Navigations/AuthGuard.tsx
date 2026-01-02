@@ -14,7 +14,7 @@ import React, { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet, Image } from 'react-native';
 import { useAuth } from '../auth/auth.hooks';
 import AuthNavigator from './AuthNavigator';
-import AppNavigator from './AppNavigator';
+import OnboardingCompletionGuard from './OnboardingCompletionGuard';
 import { COLORS, IMAGES } from '../constants/theme';
 
 const AuthGuard: React.FC = () => {
@@ -56,12 +56,8 @@ const AuthGuard: React.FC = () => {
   // Route to appropriate navigator based on auth state
   // The navigator switch automatically resets the navigation stack,
   // preventing users from navigating "back" to the other stack
-  return isAuthenticated ? <AppNavigator /> : <AuthNavigator />;
-
-  // Route to appropriate navigator based on auth state
-  // The navigator switch automatically resets the navigation stack,
-  // preventing users from navigating "back" to the other stack
-  return isAuthenticated ? <AppNavigator /> : <AuthNavigator />;
+  // OnboardingCompletionGuard will check onboarding status and route to AppNavigator or OnboardingNavigatorV2
+  return isAuthenticated ? <OnboardingCompletionGuard /> : <AuthNavigator />;
 };
 
 const styles = StyleSheet.create({

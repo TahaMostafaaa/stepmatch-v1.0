@@ -7,8 +7,11 @@
  * This navigator is shown when the user IS authenticated.
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AppState, AppStateStatus } from 'react-native';
+import LocationPermissionGuard from './LocationPermissionGuard';
+import { getLocationPermissionState } from '../services/locationService';
 
 // Import all app screens
 import DrawerNavigation from './DrawerNavigation';
@@ -130,6 +133,40 @@ export type AppStackParamList = {
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
+// Wrapper component for DrawerNavigation with location permission guard
+const DrawerNavigationWithGuard: React.FC = () => {
+  const appState = useRef<AppStateStatus>(AppState.currentState);
+
+  // Check permission state when app comes to foreground
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        // App has come to the foreground, check permission state
+        getLocationPermissionState().then((state) => {
+          if (state.status !== 'granted') {
+            // Permission was revoked, LocationPermissionGuard will handle it
+            console.log('Location permission revoked, guard will handle');
+          }
+        });
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  return (
+    <LocationPermissionGuard>
+      <DrawerNavigation />
+    </LocationPermissionGuard>
+  );
+};
+
 const AppNavigator: React.FC = () => {
   return (
     <Stack.Navigator
@@ -140,7 +177,7 @@ const AppNavigator: React.FC = () => {
       }}
     >
       {/* Main app screens */}
-      <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
+      <Stack.Screen name="DrawerNavigation" component={DrawerNavigationWithGuard} />
       <Stack.Screen name="NearbyYou" component={NearbyYou} />
       <Stack.Screen name="NearbyYou2" component={NearbyYou2} />
       <Stack.Screen name="NearbyYou3" component={NearbyYou3} />

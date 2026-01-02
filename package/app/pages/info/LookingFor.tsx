@@ -103,7 +103,7 @@ const LookingFor = ({ navigation } : LookingForScreenProps) => {
                     }]}
                 >
                     <Button
-                        onPress={() => navigation.navigate('RecentPics')}
+                        onPress={() => navigation.navigate('DrawerNavigation')}
                         title={'Next'}
                     />
                 </View>

@@ -13,7 +13,7 @@ import {
   UserPreferences,
   PreferencesUpdateRequest,
 } from '../api/matching.types';
-import { getCurrentLocation } from '../services/locationService';
+import { getCurrentLocation, validateLocationCoordinates } from '../services/locationService';
 
 // #region agent log
 if (typeof fetch !== 'undefined') {
@@ -241,15 +241,17 @@ export const MatchingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Update location manually
   const updateLocation = useCallback(
-    async (lat: number, lng: number) => {
+    async (latitude: number, longitude: number) => {
       try {
-        await matchingApi.updateLocation({ lat, lng });
+        // Validate coordinates before API call
+        validateLocationCoordinates({ latitude, longitude });
+        await matchingApi.updateLocation(latitude, longitude);
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.detail ||
           error.response?.data?.message ||
           error.message ||
-          'Failed to update location.';
+          'Failed to update location. Please check your connection and try again.';
         console.error('Error updating location:', error);
         throw new Error(errorMessage);
       }
@@ -261,14 +263,19 @@ export const MatchingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const updateLocationFromGPS = useCallback(async () => {
     try {
       const location = await getCurrentLocation();
-      if (location) {
-        await updateLocation(location.latitude, location.longitude);
-      } else {
-        throw new Error('Could not get current location');
+      if (!location) {
+        throw new Error('Unable to get your location. Please check GPS settings and try again.');
       }
+
+      // Validate coordinates before calling updateLocation
+      validateLocationCoordinates(location);
+      
+      await updateLocation(location.latitude, location.longitude);
     } catch (error: any) {
+      // Handle validation errors with user-friendly messages
+      const errorMessage = error.message || 'Unable to get your location. Please check GPS settings and try again.';
       console.error('Error updating location from GPS:', error);
-      throw error;
+      throw new Error(errorMessage);
     }
   }, [updateLocation]);
 

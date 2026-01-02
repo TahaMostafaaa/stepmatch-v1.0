@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation, useTheme } from '@react-navigation/native';
-import { Image, Platform, Text, TextInput, TouchableOpacity, View, AppState } from 'react-native';
+import { Image, Platform, Text, TextInput, TouchableOpacity, View, AppState, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { GlobalStyleSheet } from '../../constants/StyleSheet';
 import { COLORS, FONTS, IMAGES } from '../../constants/theme';
@@ -74,9 +74,60 @@ const Home = () => {
             // Update location after permission granted
             try {
                 await updateLocationFromGPS();
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Error updating location after permission:', error);
-                // Don't show error to user - location will update on next interval
+                
+                // Check if error is GPS-related (location unavailable)
+                const errorMessage = error.message || '';
+                const isGPSError = errorMessage.includes('GPS') || 
+                                 errorMessage.includes('location') || 
+                                 errorMessage.includes('Unable to get');
+                
+                if (isGPSError) {
+                    // GPS failure - show warning but allow dashboard access
+                    Alert.alert(
+                        'Location Unavailable',
+                        'Unable to get your location. Please check GPS settings and try again.',
+                        [
+                            {
+                                text: 'Retry',
+                                onPress: async () => {
+                                    try {
+                                        await updateLocationFromGPS();
+                                    } catch (retryError) {
+                                        console.error('Retry failed:', retryError);
+                                    }
+                                },
+                            },
+                            {
+                                text: 'Continue',
+                                style: 'cancel',
+                            },
+                        ]
+                    );
+                } else {
+                    // API failure - show error but allow dashboard access
+                    Alert.alert(
+                        'Location Update Failed',
+                        'Failed to update location. Please check your connection and try again.',
+                        [
+                            {
+                                text: 'Retry',
+                                onPress: async () => {
+                                    try {
+                                        await updateLocationFromGPS();
+                                    } catch (retryError) {
+                                        console.error('Retry failed:', retryError);
+                                    }
+                                },
+                            },
+                            {
+                                text: 'Continue',
+                                style: 'cancel',
+                            },
+                        ]
+                    );
+                }
             }
         }
         setStep(3);

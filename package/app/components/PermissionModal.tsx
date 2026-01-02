@@ -4,7 +4,27 @@ import { View, Text, Modal, Image, TouchableOpacity, StyleSheet } from 'react-na
 import { COLORS, FONTS } from '../constants/theme';
 import { useTheme } from '@react-navigation/native';
 
-const PermissionModal = ({ visible, icon, title, description, onAllow, onSkip }: any) => {
+interface PermissionModalProps {
+  visible: boolean;
+  icon: any;
+  title: string;
+  description: string;
+  onAllow: () => void;
+  onSkip?: () => void;
+  allowButtonText?: string;
+  skipButtonText?: string;
+}
+
+const PermissionModal = ({ 
+  visible, 
+  icon, 
+  title, 
+  description, 
+  onAllow, 
+  onSkip,
+  allowButtonText = 'Allow Access',
+  skipButtonText = 'Skip'
+}: PermissionModalProps) => {
 
     const theme = useTheme();
     const { colors }: {colors : any} = theme;
@@ -25,9 +45,10 @@ const PermissionModal = ({ visible, icon, title, description, onAllow, onSkip }:
                     <Text style={[FONTS.fontNunitoRegular, styles.desc,{color:colors.text}]}>{description}</Text>
 
                     <TouchableOpacity style={styles.allowBtn} onPress={onAllow}>
-                        <Text style={[styles.allowText,{color:COLORS.white}]}>Allow Access</Text>
+                        <Text style={[styles.allowText,{color:COLORS.white}]}>{allowButtonText}</Text>
                     </TouchableOpacity>
 
+                    {onSkip && (
                     <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={onSkip}
@@ -37,8 +58,9 @@ const PermissionModal = ({ visible, icon, title, description, onAllow, onSkip }:
                             borderRadius:15,
                         }}
                     >
-                        <Text style={[styles.skipText,{color:theme.dark ? colors.text : '#999999'}]}>Skip</Text>
+                            <Text style={[styles.skipText,{color:theme.dark ? colors.text : '#999999'}]}>{skipButtonText}</Text>
                     </TouchableOpacity>
+                    )}
                 </View>
             </View>
         </Modal>
