@@ -17,6 +17,7 @@ const STORAGE_KEYS = {
   CACHED_QUESTIONS: 'onboarding_cached_questions',
   CACHED_RESPONSES: 'onboarding_cached_responses',
   CACHED_TIMESTAMP: 'onboarding_cached_timestamp',
+  ONBOARDING_COMPLETE_PREFIX: 'onboarding_complete_',
 } as const;
 
 /**
@@ -125,6 +126,52 @@ export const clearCachedResponses = async (): Promise<void> => {
     await AsyncStorage.removeItem(STORAGE_KEYS.CACHED_RESPONSES);
   } catch (error) {
     console.error('Error clearing cached responses:', error);
+  }
+};
+
+/**
+ * Set onboarding as complete for a specific user
+ * Call this when user finishes onboarding flow
+ * @param userId - User ID to mark as complete
+ */
+export const setOnboardingComplete = async (userId: string): Promise<void> => {
+  try {
+    const key = `${STORAGE_KEYS.ONBOARDING_COMPLETE_PREFIX}${userId}`;
+    await AsyncStorage.setItem(key, new Date().toISOString());
+    console.log('[OnboardingStorage] Marked onboarding complete for user:', userId);
+  } catch (error) {
+    console.error('Error setting onboarding complete:', error);
+  }
+};
+
+/**
+ * Check if onboarding is complete for a specific user
+ * @param userId - User ID to check
+ * @returns true if onboarding was completed, false otherwise
+ */
+export const isOnboardingComplete = async (userId: string): Promise<boolean> => {
+  try {
+    const key = `${STORAGE_KEYS.ONBOARDING_COMPLETE_PREFIX}${userId}`;
+    const value = await AsyncStorage.getItem(key);
+    return value !== null;
+  } catch (error) {
+    console.error('Error checking onboarding complete:', error);
+    return false;
+  }
+};
+
+/**
+ * Clear onboarding completion status for a specific user
+ * Call this on logout to handle account switching
+ * @param userId - User ID to clear completion status for
+ */
+export const clearOnboardingComplete = async (userId: string): Promise<void> => {
+  try {
+    const key = `${STORAGE_KEYS.ONBOARDING_COMPLETE_PREFIX}${userId}`;
+    await AsyncStorage.removeItem(key);
+    console.log('[OnboardingStorage] Cleared onboarding complete for user:', userId);
+  } catch (error) {
+    console.error('Error clearing onboarding complete:', error);
   }
 };
 

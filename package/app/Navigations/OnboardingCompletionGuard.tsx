@@ -3,6 +3,9 @@
  * 
  * Component that checks if onboarding is complete via API responses.
  * Routes to onboarding flow if incomplete, otherwise routes to main app.
+ * 
+ * Optimization: Checks local completion flag first to skip API calls
+ * for returning users who already completed onboarding.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -10,6 +13,8 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { OnboardingProvider, useOnboarding } from '../context/onboardingContext';
 import { onboardingApi } from '../api/onboarding.api';
+import { useAuth } from '../auth/auth.hooks';
+import { isOnboardingComplete, setOnboardingComplete } from '../storage/onboardingStorage';
 import AppNavigator from './AppNavigator';
 import OnboardingNavigatorV2 from './OnboardingNavigatorV2';
 import { COLORS, FONTS } from '../constants/theme';
@@ -28,6 +33,7 @@ const OnboardingCompletionGuardInner: React.FC<OnboardingCompletionGuardProps> =
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { state, fetchQuestions, getUserResponses, getQuestionsForScreen, isScreenComplete } = useOnboarding();
+  const { user } = useAuth();
 
   // Check onboarding completion on mount
   useEffect(() => {
@@ -39,6 +45,20 @@ const OnboardingCompletionGuardInner: React.FC<OnboardingCompletionGuardProps> =
     try {
       setIsChecking(true);
       setError(null);
+
+      // Step 1: Check local completion flag first (fast path for returning users)
+      if (user?.id) {
+        const localComplete = await isOnboardingComplete(user.id);
+        if (localComplete) {
+          console.log('[OnboardingGuard] Local flag indicates onboarding complete, skipping API check');
+          setIsComplete(true);
+          setIsChecking(false);
+          return;
+        }
+      }
+
+      // Step 2: No local flag - check via API
+      console.log('[OnboardingGuard] No local completion flag, checking via API...');
 
       // Fetch questions directly from API to get fresh data
       let questionsData;
@@ -130,6 +150,12 @@ const OnboardingCompletionGuardInner: React.FC<OnboardingCompletionGuardProps> =
         responsesCount: userResponses.length,
         hasRequiredQuestions,
       });
+
+      // Step 3: If complete via API, save local flag for future logins
+      if (allComplete && user?.id) {
+        await setOnboardingComplete(user.id);
+        console.log('[OnboardingGuard] Saved local completion flag for user:', user.id);
+      }
 
       setIsComplete(allComplete);
     } catch (err: any) {

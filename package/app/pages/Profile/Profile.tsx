@@ -164,7 +164,8 @@ const Profile = () => {
                         flexDirection:'row',
                         alignItems:'center',
                         justifyContent:'space-around',
-                        marginBottom:10,
+                        marginBottom:-16,
+                        zIndex:1,
                     }}
                 >
                     <View
@@ -208,15 +209,15 @@ const Profile = () => {
                     </View>
                 </View>
                 {loading ? (
-                    <View style={{alignItems:'center',justifyContent:'center',paddingVertical:20}}>
+                    <View style={{alignItems:'center',justifyContent:'center',paddingVertical:20,marginTop:20}}>
                         <ActivityIndicator size="large" color={COLORS.primary} />
                     </View>
                 ) : error ? (
-                    <View style={{alignItems:'center',justifyContent:'center',paddingVertical:20,paddingHorizontal:20}}>
+                    <View style={{alignItems:'center',justifyContent:'center',paddingVertical:20,paddingHorizontal:20,marginTop:20}}>
                         <Text style={{...FONTS.fontRegular,color:colors.title,textAlign:'center'}}>{error}</Text>
                     </View>
                 ) : (
-                    <View style={[GlobalStyleSheet.flexaling,{justifyContent:'center',gap:10,marginBottom:15}]}>
+                    <View style={[GlobalStyleSheet.flexaling,{justifyContent:'center',gap:10,marginBottom:15,marginTop:25,paddingTop:16}]}>
                         <Text style={{...FONTS.fontBold,color:colors.title,lineHeight:18,fontSize:18}}>
                             {profile?.name || 'User'}
                             {profile?.age !== undefined 

@@ -34,6 +34,7 @@ import {
   clearAuthData,
   isTokenExpired,
 } from '../storage/secureStorage';
+import { clearOnboardingComplete } from '../storage/onboardingStorage';
 import { authApi } from '../api/auth.api';
 import { setLogoutCallback } from '../api/apiClient';
 
@@ -312,6 +313,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Calls API logout and clears local storage
    */
   const logout = useCallback(async (): Promise<void> => {
+    // Get user ID before clearing data (for onboarding flag cleanup)
+    const userId = state.user?.id;
+
     try {
       // Call API to invalidate refresh token server-side
       await authApi.logout();
@@ -319,11 +323,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Continue with local logout even if API call fails
       console.error('Logout API call failed, continuing with local logout');
     } finally {
+      // Clear onboarding completion flag for this user (handles account switching)
+      if (userId) {
+        try {
+          await clearOnboardingComplete(userId);
+        } catch (error) {
+          console.error('Error clearing onboarding completion flag:', error);
+        }
+      }
       // Always clear local storage and state
       await clearAuthData();
       dispatch({ type: 'AUTH_LOGOUT' });
     }
-  }, []);
+  }, [state.user?.id]);
 
   /**
    * Clear error state

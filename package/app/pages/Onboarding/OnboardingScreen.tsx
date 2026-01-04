@@ -19,6 +19,8 @@ import {
 import { useTheme } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useOnboarding } from '../../context/onboardingContext';
+import { useAuth } from '../../auth/auth.hooks';
+import { setOnboardingComplete } from '../../storage/onboardingStorage';
 import { GlobalStyleSheet } from '../../constants/StyleSheet';
 import { FONTS, COLORS, SIZES } from '../../constants/theme';
 import Header from '../../layout/Header';
@@ -45,6 +47,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation, route }
   const theme = useTheme();
   const { colors }: { colors: any } = theme;
   const { screenOrder, onCompletion } = route.params;
+  const { user } = useAuth();
 
   const {
     state,
@@ -223,6 +226,12 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation, route }
       } catch (error) {
         console.error('[OnboardingScreen] Error saving responses:', error);
         // Continue with completion even if batch save fails
+      }
+
+      // Set local completion flag for future logins
+      if (user?.id) {
+        await setOnboardingComplete(user.id);
+        console.log('[OnboardingScreen] Set local completion flag for user:', user.id);
       }
 
       // Trigger completion callback to navigate to main app
