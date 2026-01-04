@@ -224,7 +224,7 @@ export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({
   );
 
   /**
-   * Save a single response
+   * Save a single response (stores locally, will be sent via batch update on Complete)
    */
   const saveResponse = useCallback(
     async (
@@ -234,134 +234,73 @@ export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({
     ): Promise<void> => {
       dispatch({ type: 'SAVE_RESPONSE_START' });
 
-      try {
-        const response = await onboardingApi.saveResponse(
-          questionId,
-          optionId,
-          textValue
-        );
+      // Create local response object (no API call - will batch save on Complete)
+      const localResponse: UserResponse = {
+        id: `local-${questionId}-${Date.now()}`,
+        question_id: questionId,
+        option_id: optionId,
+        text_value: textValue,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
 
-        // Update local cache
-        const updatedResponses = [...state.userResponses];
-        const existingIndex = updatedResponses.findIndex(
-          (r) => r.question_id === questionId
-        );
-        if (existingIndex >= 0) {
-          updatedResponses[existingIndex] = response;
-        } else {
-          updatedResponses.push(response);
-        }
-        await cacheResponses(updatedResponses);
-
-        console.log('[OnboardingContext] Saved response:', {
-          questionId,
-          optionId,
-          textValue,
-          response,
-        });
-
-        dispatch({ type: 'SAVE_RESPONSE_SUCCESS', payload: response });
-      } catch (error: any) {
-        const errorMessage =
-          error.response?.data?.detail ||
-          error.response?.data?.message ||
-          error.message ||
-          'Failed to save response. Please try again.';
-        dispatch({ type: 'SAVE_RESPONSE_FAILURE', payload: errorMessage });
-        throw error;
+      // Update local cache
+      const updatedResponses = [...state.userResponses];
+      const existingIndex = updatedResponses.findIndex(
+        (r) => r.question_id === questionId
+      );
+      if (existingIndex >= 0) {
+        updatedResponses[existingIndex] = localResponse;
+      } else {
+        updatedResponses.push(localResponse);
       }
+      await cacheResponses(updatedResponses);
+
+      console.log('[OnboardingContext] Stored response locally:', {
+        questionId,
+        optionId,
+        textValue,
+      });
+
+      dispatch({ type: 'SAVE_RESPONSE_SUCCESS', payload: localResponse });
     },
     [state.userResponses]
   );
 
   /**
-   * Save multiple responses for multi-select question
+   * Save multiple responses for multi-select question (stores locally, will be sent via batch update on Complete)
    */
   const saveMultipleResponses = useCallback(
     async (questionId: string, optionIds: string[]): Promise<void> => {
       dispatch({ type: 'SAVE_RESPONSE_START' });
 
-      try {
-        const apiResponse = await onboardingApi.saveMultipleResponses(
-          questionId,
-          optionIds
-        );
+      // Create local response object (no API call - will batch save on Complete)
+      const localResponse: UserResponse = {
+        id: `local-${questionId}-${Date.now()}`,
+        question_id: questionId,
+        option_ids: optionIds,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
 
-        // Normalize the response - API may return array-like object
-        // e.g., {"0": {...response}, "option_ids": [...]} instead of flat object
-        let normalizedResponse: UserResponse;
-
-        if (apiResponse && typeof apiResponse === 'object') {
-          // Check if it's an array-like object (has "0" key with nested question_id)
-          const firstItem = (apiResponse as any)['0'];
-          if (firstItem && firstItem.question_id) {
-            // Extract the first response and merge with option_ids
-            normalizedResponse = {
-              id: firstItem.id,
-              question_id: firstItem.question_id || questionId,
-              option_id: firstItem.option_id,
-              text_value: firstItem.text_value,
-              created_at: firstItem.created_at,
-              updated_at: firstItem.updated_at,
-              option_ids: (apiResponse as any).option_ids || optionIds,
-            };
-          } else if (apiResponse.question_id) {
-            // Standard flat object response
-            normalizedResponse = {
-              ...apiResponse,
-              question_id: apiResponse.question_id || questionId,
-              option_ids: apiResponse.option_ids || optionIds,
-            };
-          } else {
-            // Fallback - construct response manually with provided questionId
-            normalizedResponse = {
-              id: (apiResponse as any).id || `local-${Date.now()}`,
-              question_id: questionId,
-              option_ids: (apiResponse as any).option_ids || optionIds,
-              created_at: (apiResponse as any).created_at || new Date().toISOString(),
-              updated_at: (apiResponse as any).updated_at || new Date().toISOString(),
-            };
-          }
-        } else {
-          // Fallback - construct response manually
-          normalizedResponse = {
-            id: `local-${Date.now()}`,
-            question_id: questionId,
-            option_ids: optionIds,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-        }
-
-        // Update local cache
-        const updatedResponses = [...state.userResponses];
-        const existingIndex = updatedResponses.findIndex(
-          (r) => r.question_id === questionId
-        );
-        if (existingIndex >= 0) {
-          updatedResponses[existingIndex] = normalizedResponse;
+      // Update local cache
+      const updatedResponses = [...state.userResponses];
+      const existingIndex = updatedResponses.findIndex(
+        (r) => r.question_id === questionId
+      );
+      if (existingIndex >= 0) {
+        updatedResponses[existingIndex] = localResponse;
       } else {
-          updatedResponses.push(normalizedResponse);
-        }
-        await cacheResponses(updatedResponses);
-
-        console.log('[OnboardingContext] Saved multi-select response:', {
-          questionId,
-          optionIds,
-          apiResponse,
-          normalizedResponse,
-        });
-
-        dispatch({ type: 'SAVE_RESPONSE_SUCCESS', payload: normalizedResponse });
-      } catch (error: any) {
-        const errorMessage =
-          error.response?.data?.detail ||
-          error.response?.data?.message ||
-          error.message ||
-          'Failed to save responses. Please try again.';
-        dispatch({ type: 'SAVE_RESPONSE_FAILURE', payload: errorMessage });
-        throw error;
+        updatedResponses.push(localResponse);
       }
+      await cacheResponses(updatedResponses);
+
+      console.log('[OnboardingContext] Stored multi-select response locally:', {
+        questionId,
+        optionIds,
+      });
+
+      dispatch({ type: 'SAVE_RESPONSE_SUCCESS', payload: localResponse });
     },
     [state.userResponses]
   );

@@ -189,9 +189,30 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation, route }
       // Last screen - user pressed Complete button
       console.log('[OnboardingScreen] Complete button pressed, saving responses and completing onboarding');
       try {
+        // Log raw user responses for debugging
+        console.log('[OnboardingScreen] Raw userResponses:', state.userResponses.map(r => ({
+          question_id: r.question_id,
+          option_id: r.option_id,
+          option_ids: r.option_ids,
+          text_value: r.text_value,
+        })));
+
         // Batch save all responses to ensure everything is saved
-        // Use helper function that filters out invalid responses
+        // Use helper function that expands multi-select and filters invalid responses
         const responses = mapResponsesToBatch(state.userResponses);
+
+        // Log exactly what will be sent to API
+        console.log('[OnboardingScreen] Batch payload details:', {
+          totalUserResponses: state.userResponses.length,
+          batchItemsCount: responses.length,
+          batchItems: responses.map(r => ({
+            question_id: r.question_id,
+            has_option_id: !!r.option_id,
+            option_id: r.option_id,
+            has_text_value: !!r.text_value,
+            text_value: r.text_value,
+          })),
+        });
 
         if (responses.length > 0) {
           console.log(`[OnboardingScreen] Batch updating ${responses.length} valid responses`);

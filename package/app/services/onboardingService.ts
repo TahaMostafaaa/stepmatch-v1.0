@@ -107,35 +107,42 @@ export function areAllScreensComplete(
 
 /**
  * Convert user responses to batch update format
- * Excludes multi-select responses (with option_ids) as they're already saved individually.
- * Only includes single-select (option_id) and text (text_value) responses.
+ * Batch API format:
+ * - Single-select: { question_id, option_id }
+ * - Multi-select: { question_id, option_ids: [...] }
+ * - Text: { question_id, text_value }
  * @param responses - Array of UserResponse objects
- * @returns Array of BatchResponseItem objects with valid values only (excluding multi-select)
+ * @returns Array of BatchResponseItem objects ready for batch API
  */
 export function mapResponsesToBatch(
   responses: UserResponse[]
 ): BatchResponseItem[] {
-  return responses
-    .filter((r) => {
-      // Exclude multi-select responses (they're already saved individually via saveMultipleResponses)
-      // Only include single-select and text responses
-      return (
-        r.option_id || // Single-select
-        (r.text_value && r.text_value.trim().length > 0) // Text
-      );
-      // Note: Excluding option_ids responses as they're already saved and API may not accept them in batch
-    })
-    .map((r) => {
-      const batchItem: BatchResponseItem = {
+  const batchItems: BatchResponseItem[] = [];
+
+  for (const r of responses) {
+    if (r.option_ids && r.option_ids.length > 0) {
+      // Multi-select: send option_ids array
+      batchItems.push({
         question_id: r.question_id,
-      };
-      if (r.option_id) {
-        batchItem.option_id = r.option_id;
-      } else if (r.text_value) {
-        batchItem.text_value = r.text_value;
-      }
-      return batchItem;
-    });
+        option_ids: r.option_ids,
+      });
+    } else if (r.option_id) {
+      // Single-select: send option_id
+      batchItems.push({
+        question_id: r.question_id,
+        option_id: r.option_id,
+      });
+    } else if (r.text_value && r.text_value.trim().length > 0) {
+      // Text response
+      batchItems.push({
+        question_id: r.question_id,
+        text_value: r.text_value,
+      });
+    }
+    // Skip responses without valid values
+  }
+
+  return batchItems;
 }
 
 /**
