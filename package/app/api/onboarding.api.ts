@@ -14,6 +14,7 @@ import {
   SaveMultipleResponsesRequest,
   UserResponse,
   BatchUpdateRequest,
+  BatchUpdateResponse,
   BatchResponseItem,
 } from '../types/onboarding';
 
@@ -112,17 +113,17 @@ export const onboardingApi = {
   /**
    * Batch update multiple responses
    * @param responses - Array of BatchResponseItem objects
-   * @returns Array of updated UserResponse objects
+   * @returns BatchUpdateResponse with success status and counts
    * @throws 400 for validation errors, 401 for unauthorized, 500 for server errors
    */
   batchUpdateResponses: async (
     responses: BatchResponseItem[]
-  ): Promise<UserResponse[]> => {
+  ): Promise<BatchUpdateResponse> => {
     const requestBody: BatchUpdateRequest = {
       responses,
     };
 
-    const response = await apiClient.put<UserResponse[]>(
+    const response = await apiClient.put<BatchUpdateResponse>(
       '/questions/responses/batch',
       requestBody
     );

@@ -14,6 +14,18 @@ const API_URL =
     ? 'http://localhost:8000'  // Development
     : 'https://api.stepmatch.com'; // Production
 
+// Supabase configuration
+// TODO: Replace with your actual Supabase project credentials
+const SUPABASE_URL = 
+  (typeof __DEV__ !== 'undefined' && __DEV__)
+    ? 'https://your-project-id.supabase.co'  // Development - replace with your project URL
+    : 'https://your-project-id.supabase.co'; // Production - replace with your project URL
+
+const SUPABASE_ANON_KEY = 
+  (typeof __DEV__ !== 'undefined' && __DEV__)
+    ? 'your-anon-key-here'  // Development - replace with your anon key
+    : 'your-anon-key-here'; // Production - replace with your anon key
+
 // #region agent log
 if (typeof fetch !== 'undefined') {
   fetch('http://127.0.0.1:7242/ingest/9eba5a3f-effc-404b-8ca6-35a671e4da8f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'env.ts:15',message:'ENV module loading',data:{apiUrl:API_URL,__DEV__:typeof __DEV__ !== 'undefined' ? __DEV__ : 'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
@@ -23,4 +35,6 @@ if (typeof fetch !== 'undefined') {
 export const ENV = {
   API_URL,
   API_TIMEOUT: 30000,
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
 };

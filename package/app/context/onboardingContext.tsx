@@ -325,13 +325,37 @@ export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({
 
   /**
    * Batch update responses
+   * Calls batch API, then refetches responses from server
    */
   const batchUpdateResponses = useCallback(
     async (responses: any[]): Promise<void> => {
       try {
-        const updated = await onboardingApi.batchUpdateResponses(responses);
-        await cacheResponses(updated);
-        dispatch({ type: 'SET_USER_RESPONSES', payload: updated });
+        // Call batch update API
+        const result = await onboardingApi.batchUpdateResponses(responses);
+        
+        console.log('[OnboardingContext] Batch update result:', {
+          success: result.success,
+          message: result.message,
+          total: result.total_responses,
+          updated: result.updated_responses,
+          created: result.created_responses,
+          errors: result.errors,
+        });
+
+        // Check for errors in the response
+        if (!result.success && result.errors && result.errors.length > 0) {
+          const errorMessage = result.errors.join(', ');
+          console.error('[OnboardingContext] Batch update had errors:', errorMessage);
+          dispatch({ type: 'FETCH_QUESTIONS_FAILURE', payload: errorMessage });
+          throw new Error(errorMessage);
+        }
+
+        // Refetch user responses from server to get the updated data
+        const updatedResponses = await onboardingApi.getUserResponses();
+        await cacheResponses(updatedResponses);
+        dispatch({ type: 'SET_USER_RESPONSES', payload: updatedResponses });
+        
+        console.log('[OnboardingContext] Refetched responses after batch update:', updatedResponses.length);
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.detail ||

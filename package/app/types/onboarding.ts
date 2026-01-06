@@ -123,6 +123,18 @@ export interface BatchUpdateRequest {
 }
 
 /**
+ * PUT /questions/responses/batch response
+ */
+export interface BatchUpdateResponse {
+  success: boolean;
+  message: string;
+  total_responses: number;
+  updated_responses: number;
+  created_responses: number;
+  errors: string[] | null;
+}
+
+/**
  * Onboarding context state
  */
 export interface OnboardingState {

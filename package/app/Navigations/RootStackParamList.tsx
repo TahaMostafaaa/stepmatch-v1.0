@@ -1,6 +1,7 @@
 
 import { NavigatorScreenParams } from "@react-navigation/native";
 import { BottomTabParamList } from "./BottomTabParamList";
+import { SingleChatParams } from "../api/chat.types";
 
 export type RootStackParamList = {
     DrawerNavigation: NavigatorScreenParams<BottomTabParamList>;
@@ -33,7 +34,7 @@ export type RootStackParamList = {
     RecentPics: undefined;
     Orientation: undefined;
     LookingFor: undefined;
-    SingleChat: undefined;
+    SingleChat: SingleChatParams;
     Settings: undefined;
     Splash: undefined;
 	

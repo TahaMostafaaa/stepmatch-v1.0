@@ -7,6 +7,7 @@ import {
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import themeContext from '../constants/themeContext';
 import { MatchingProvider } from '../context/matchingContext';
+import { ChatProvider } from '../context/chatContext';
 import { AuthProvider } from '../auth/auth.context';
 import AuthGuard from './AuthGuard';
 import ErrorBoundary from '../components/ErrorBoundary';
@@ -81,9 +82,11 @@ const Routes = () => {
                 <themeContext.Provider value={authContext}>
                     <AuthProvider>
                         <MatchingProvider>
-                            <NavigationContainer theme={theme}>
-                                <AuthGuard />
-                            </NavigationContainer>
+                            <ChatProvider>
+                                <NavigationContainer theme={theme}>
+                                    <AuthGuard />
+                                </NavigationContainer>
+                            </ChatProvider>
                         </MatchingProvider>
                     </AuthProvider>
                 </themeContext.Provider>

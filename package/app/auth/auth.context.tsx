@@ -34,7 +34,6 @@ import {
   clearAuthData,
   isTokenExpired,
 } from '../storage/secureStorage';
-import { clearOnboardingComplete } from '../storage/onboardingStorage';
 import { authApi } from '../api/auth.api';
 import { setLogoutCallback } from '../api/apiClient';
 
@@ -143,7 +142,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Check if we have stored tokens
         const tokens = await getTokens();
         
-        if (!tokens || !tokens.access_token) {
+        if (!tokens.access_token) {
           // No tokens stored - user needs to login
           dispatch({ type: 'AUTH_LOGOUT' });
           return;
@@ -157,30 +156,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           try {
             const response = await authApi.refreshToken(tokens.refresh_token);
             
-            if (response && response.access_token && response.user) {
+            if (response.access_token && response.user) {
               await storeTokens({
                 access_token: response.access_token,
-                refresh_token: response.refresh_token || tokens.refresh_token,
+                refresh_token: response.refresh_token,
                 expires_at: response.expires_at,
               });
               await storeUser(response.user);
               dispatch({ type: 'AUTH_RESTORE', payload: response.user });
               return;
-            } else {
-              // Invalid response - clear and require login
-              console.warn('Invalid refresh token response:', response);
-              await clearAuthData();
-              dispatch({ type: 'AUTH_LOGOUT' });
-              return;
             }
-          } catch (refreshError: any) {
+          } catch (refreshError) {
             // Refresh failed - clear tokens and require login
-            console.error('Token refresh failed:', refreshError?.message || refreshError);
-            try {
-              await clearAuthData();
-            } catch (clearError) {
-              console.error('Error clearing auth data after refresh failure:', clearError);
-            }
+            await clearAuthData();
             dispatch({ type: 'AUTH_LOGOUT' });
             return;
           }
@@ -188,27 +176,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Token still valid - restore user from storage
         const user = await getUser();
-        if (user && user.id) {
+        if (user) {
           dispatch({ type: 'AUTH_RESTORE', payload: user });
         } else {
           // Token exists but no user - something wrong, clear everything
-          console.warn('Token exists but user data is missing or invalid');
           await clearAuthData();
           dispatch({ type: 'AUTH_LOGOUT' });
         }
-      } catch (error: any) {
-        console.error('Auth bootstrap error:', error);
-        console.error('Auth bootstrap error details:', {
-          message: error?.message,
-          stack: error?.stack,
-          name: error?.name,
-        });
-        // Clear any potentially corrupted data and require login
-        try {
-          await clearAuthData();
-        } catch (clearError) {
-          console.error('Error clearing auth data during bootstrap:', clearError);
-        }
+      } catch (error) {
+        console.error('Auth bootstrap error');
         dispatch({ type: 'AUTH_LOGOUT' });
       }
     };
@@ -313,9 +289,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Calls API logout and clears local storage
    */
   const logout = useCallback(async (): Promise<void> => {
-    // Get user ID before clearing data (for onboarding flag cleanup)
-    const userId = state.user?.id;
-
     try {
       // Call API to invalidate refresh token server-side
       await authApi.logout();
@@ -323,19 +296,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Continue with local logout even if API call fails
       console.error('Logout API call failed, continuing with local logout');
     } finally {
-      // Clear onboarding completion flag for this user (handles account switching)
-      if (userId) {
-        try {
-          await clearOnboardingComplete(userId);
-        } catch (error) {
-          console.error('Error clearing onboarding completion flag:', error);
-        }
-      }
       // Always clear local storage and state
       await clearAuthData();
       dispatch({ type: 'AUTH_LOGOUT' });
     }
-  }, [state.user?.id]);
+  }, []);
 
   /**
    * Clear error state

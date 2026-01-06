@@ -99,3 +99,4 @@ export interface UserPreferences {
   longitude: number | null;
   last_location_update: string | null;
 }
+
